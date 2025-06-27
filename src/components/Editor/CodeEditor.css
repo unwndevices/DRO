@@ -1,0 +1,199 @@
+.dro-code-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #181818;
+  position: relative;
+}
+
+.dro-editor-container {
+  flex: 1;
+  position: relative;
+  display: flex;
+  overflow: hidden;
+}
+
+.dro-editor-textarea {
+  flex: 1;
+  font-family: 'Fira Mono', 'Monaco', 'Consolas', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  background: #181818;
+  color: #FFBF00;
+  border: none;
+  outline: none;
+  padding: 12px 12px 12px 60px;
+  resize: none;
+  overflow-y: auto;
+  white-space: pre;
+  tab-size: 2;
+  caret-color: #FFBF00;
+}
+
+.dro-editor-textarea::selection {
+  background: rgba(255, 191, 0, 0.3);
+}
+
+.dro-editor-textarea::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dro-editor-textarea::-webkit-scrollbar-track {
+  background: #262626;
+}
+
+.dro-editor-textarea::-webkit-scrollbar-thumb {
+  background: #664D00;
+  border-radius: 4px;
+}
+
+.dro-editor-textarea::-webkit-scrollbar-thumb:hover {
+  background: #FFBF00;
+}
+
+.dro-editor-gutter {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50px;
+  background: #262626;
+  border-right: 1px solid #664D00;
+  padding: 12px 8px;
+  font-family: 'Fira Mono', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #666666;
+  user-select: none;
+  overflow: hidden;
+}
+
+.dro-editor-line-number {
+  text-align: right;
+  height: 21px; /* Match line height */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.dro-editor-line-number:hover {
+  color: #FFBF00;
+}
+
+/* Error Display */
+.dro-editor-errors {
+  background: rgba(255, 68, 68, 0.1);
+  border-top: 1px solid #FF4444;
+  max-height: 120px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.dro-editor-error {
+  padding: 6px 12px;
+  font-size: 12px;
+  color: #FF4444;
+  font-family: 'Fira Mono', monospace;
+  border-bottom: 1px solid rgba(255, 68, 68, 0.2);
+}
+
+.dro-editor-error:last-child {
+  border-bottom: none;
+}
+
+.dro-error-line {
+  color: #FFAA00;
+  margin-right: 8px;
+  font-weight: 500;
+}
+
+.dro-error-message {
+  color: #FF4444;
+}
+
+/* Footer */
+.dro-editor-footer {
+  background: #1e1e1e;
+  border-top: 1px solid #664D00;
+  padding: 6px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: #999999;
+  flex-shrink: 0;
+}
+
+.dro-editor-info {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.dro-execute-button {
+  background: transparent;
+  border: 1px solid #FFBF00;
+  color: #FFBF00;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.dro-execute-button:hover {
+  background: rgba(255, 191, 0, 0.1);
+  box-shadow: 0 0 6px rgba(255, 191, 0, 0.4);
+}
+
+.dro-execute-button:active {
+  background: rgba(255, 191, 0, 0.2);
+  transform: translateY(1px);
+}
+
+/* Syntax Highlighting Simulation */
+.dro-editor-textarea {
+  /* Lua keywords will be handled by CodeMirror later */
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .dro-editor-textarea {
+    font-size: 12px;
+    padding-left: 45px;
+  }
+  
+  .dro-editor-gutter {
+    width: 40px;
+    font-size: 10px;
+    padding: 12px 4px;
+  }
+  
+  .dro-editor-footer {
+    flex-direction: column;
+    gap: 6px;
+    align-items: stretch;
+  }
+  
+  .dro-editor-info {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .dro-execute-button {
+    align-self: center;
+    min-width: 80px;
+  }
+}
+
+/* Focus States */
+.dro-code-editor:focus-within .dro-editor-gutter {
+  border-right-color: #FFBF00;
+  background: rgba(255, 191, 0, 0.05);
+}
+
+.dro-code-editor:focus-within .dro-editor-line-number {
+  color: #999999;
+} 

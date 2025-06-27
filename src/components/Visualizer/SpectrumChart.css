@@ -1,0 +1,101 @@
+.dro-spectrum-chart {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #181818;
+  position: relative;
+}
+
+.dro-chart-canvas {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  background: #181818;
+}
+
+.dro-chart-info {
+  background: #1e1e1e;
+  border-top: 1px solid #664D00;
+  padding: 6px 12px;
+  flex-shrink: 0;
+}
+
+.dro-chart-stats {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  font-size: 11px;
+  color: #999999;
+  font-family: 'Fira Mono', monospace;
+}
+
+.dro-chart-stats span {
+  display: flex;
+  align-items: center;
+  padding: 2px 6px;
+  background: rgba(255, 191, 0, 0.05);
+  border: 1px solid rgba(255, 191, 0, 0.2);
+  border-radius: 2px;
+}
+
+.dro-chart-stats span:first-child {
+  color: #FFBF00;
+  font-weight: 500;
+}
+
+/* Canvas rendering improvements */
+.dro-chart-canvas {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .dro-chart-stats {
+    flex-direction: column;
+    gap: 4px;
+    align-items: stretch;
+  }
+  
+  .dro-chart-stats span {
+    text-align: center;
+    font-size: 10px;
+  }
+  
+  .dro-chart-info {
+    padding: 4px 8px;
+  }
+}
+
+/* Loading state */
+.dro-spectrum-chart.loading {
+  opacity: 0.6;
+}
+
+.dro-spectrum-chart.loading .dro-chart-canvas {
+  cursor: wait;
+}
+
+/* Empty state */
+.dro-spectrum-chart.empty::before {
+  content: "No data to display\AExecute a Lua script to generate spectral data";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #666666;
+  font-family: 'Fira Mono', monospace;
+  font-size: 14px;
+  text-align: center;
+  white-space: pre-line;
+  line-height: 1.5;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Hover effects */
+.dro-chart-canvas:hover {
+  background: #1a1a1a;
+} 

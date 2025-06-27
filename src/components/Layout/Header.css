@@ -1,0 +1,98 @@
+.dro-header {
+  background: #1e1e1e;
+  border-bottom: 1px solid #FFBF00;
+  padding: 8px 16px;
+  flex-shrink: 0;
+}
+
+.dro-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 100%;
+}
+
+.dro-title {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0;
+}
+
+.dro-title-main {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #FFBF00;
+  letter-spacing: 2px;
+}
+
+.dro-title-sub {
+  font-size: 0.75rem;
+  color: #999999;
+  font-weight: 400;
+  letter-spacing: 1px;
+}
+
+.dro-nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dro-nav-button {
+  background: transparent;
+  border: 1px solid #664D00;
+  color: #CCCCCC;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.dro-nav-button:hover {
+  border-color: #FFBF00;
+  color: #FFBF00;
+  background: rgba(255, 191, 0, 0.05);
+}
+
+.dro-nav-button:focus {
+  outline: none;
+  border-color: #FFBF00;
+  box-shadow: 0 0 0 1px rgba(255, 191, 0, 0.3);
+}
+
+.dro-nav-button:active {
+  background: rgba(255, 191, 0, 0.1);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .dro-header-content {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  
+  .dro-title {
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start;
+  }
+  
+  .dro-title-sub {
+    font-size: 0.7rem;
+  }
+  
+  .dro-nav {
+    align-self: stretch;
+    justify-content: flex-end;
+  }
+  
+  .dro-nav-button {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+  }
+} 
