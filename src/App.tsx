@@ -1,10 +1,10 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Header } from './components/Layout/Header';
 import { MainContent, SplitLayout, Panel } from './components/Layout/MainContent';
 import { CodeEditor } from './components/Editor/CodeEditor';
 import { SimpleSpectrumChart } from './components/Visualizer/SimpleSpectrumChart';
 import { luaService } from './services/LuaEngine/LuaService';
-import type { SpectralFrame, Datum } from './services/DataModel/types.ts';
+import type { Datum } from './services/DataModel/types.ts';
 import './styles/globals.css';
 
 interface Template {

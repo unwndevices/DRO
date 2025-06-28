@@ -60,7 +60,7 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
     // Draw frequency labels and grid
     drawFrequencyLabels(ctx, rect.width, rect.height);
     
-  }, [frames, currentFrame]);
+  }, [frames, currentFrame]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getFrequencyForBand = (band: number, totalBands: number = 20): number => {
     const freqRatio = band / (totalBands - 1);

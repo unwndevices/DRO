@@ -78,7 +78,7 @@ export const EnhancedSpectrumChart: React.FC<EnhancedSpectrumChartProps> = ({
     // Draw frequency labels and grid
     drawFrequencyLabels(ctx, rect.width, rect.height);
     
-  }, [frames, currentFrame, chartType, zoom]);
+  }, [frames, currentFrame, chartType, zoom]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getFrequencyForBand = (band: number, totalBands: number = 20): number => {
     const freqRatio = band / (totalBands - 1);
