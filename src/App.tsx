@@ -1,8 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Header } from './components/Layout/Header';
 import { MainContent, SplitLayout, Panel } from './components/Layout/MainContent';
 import { CodeEditor } from './components/Editor/CodeEditor';
-import { SpectrumChart } from './components/Visualizer/SpectrumChart';
+import { TemplateSelector } from './components/Editor/TemplateSelector';
+import { SimpleSpectrumChart } from './components/Visualizer/SimpleSpectrumChart';
+import { luaService } from './services/LuaEngine/LuaService';
 import type { SpectralFrame, Datum } from './services/DataModel/types.ts';
 import './styles/globals.css';
 
@@ -13,56 +15,37 @@ function App() {
   const [errors, setErrors] = useState<Array<{ message: string; line?: number }>>([]);
   const [isExecuting, setIsExecuting] = useState(false);
 
-  // Mock Lua execution - this will be replaced with Wasmoon integration
+  // Initialize with default template
+  useEffect(() => {
+    const defaultScript = luaService.getDefaultTemplate();
+    setScriptContent(defaultScript);
+  }, []);
+
+  // Real Lua execution with shader-like processing
   const executeLuaScript = useCallback(async (code: string) => {
     setIsExecuting(true);
     setErrors([]);
 
     try {
-      // Simulate execution delay
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // Mock data generation - this simulates what the Lua script would do
-      const frames: SpectralFrame[] = [];
-      const frameCount = 128;
-      const bandCount = 20;
-
-      for (let f = 0; f < frameCount; f++) {
-        const bands: number[] = [];
-        for (let b = 0; b < bandCount; b++) {
-          // Generate sample spectral data
-          const frequency = (b + 1) * 0.5;
-          const time = f * 0.1;
-          const amplitude = Math.sin(time * frequency) * Math.cos(time * 0.2);
-          bands.push(amplitude);
-        }
-        
-        frames.push({
-          bands,
-          timestamp: f,
-          metadata: { frame: f }
-        });
-      }
-
-      const datum: Datum = {
-        frames,
-        sampleRate: 44100,
-        frameCount,
-        bandCount,
-        name: 'Generated Spectral Data',
-        createdAt: new Date()
-      };
-
-      setSpectralData(datum);
-      setCurrentFrame(0);
+      const result = await luaService.executeScript(code);
       
-      console.log('DRO: Generated spectral data with', frameCount, 'frames and', bandCount, 'bands');
+      if (result.success && result.datum) {
+        setSpectralData(result.datum);
+        setCurrentFrame(0);
+        
+        console.log(`DRO: Lua execution successful in ${result.executionTime.toFixed(2)}ms`);
+      } else if (result.errors) {
+        setErrors(result.errors);
+        console.error('DRO: Lua execution failed:', result.errors);
+      }
       
     } catch (error) {
       setErrors([{
         message: error instanceof Error ? error.message : 'Unknown execution error',
-        line: 1
+        line: 1,
+        type: 'runtime'
       }]);
+      console.error('DRO: Execution error:', error);
     } finally {
       setIsExecuting(false);
     }
@@ -109,6 +92,9 @@ function App() {
         <SplitLayout
           left={
             <Panel title="Lua Editor" className="editor">
+              <TemplateSelector
+                onTemplateSelect={setScriptContent}
+              />
               <CodeEditor
                 value={scriptContent}
                 onChange={setScriptContent}
@@ -120,10 +106,11 @@ function App() {
           }
           right={
             <Panel title="Spectrum Visualization" className="visualizer">
-              <SpectrumChart
+              <SimpleSpectrumChart
                 frames={spectralData?.frames || []}
                 currentFrame={currentFrame}
-                className={spectralData ? '' : 'empty'}
+                onFrameChange={setCurrentFrame}
+                className={`${spectralData ? '' : 'empty'} ${isExecuting ? 'loading' : ''}`}
               />
             </Panel>
           }
@@ -133,22 +120,27 @@ function App() {
       <div className="dro-status-bar">
         <div className="dro-status-left">
           <div className="dro-status-item">
-            <span>DRO v0.1.0</span>
+            <span>DRO v0.2.0 - Lua Engine</span>
           </div>
           {spectralData && (
             <div className="dro-status-item success">
-              <span>{spectralData.frameCount} frames, {spectralData.bandCount} bands</span>
+              <span>Generated: {spectralData.frameCount}f × {spectralData.bandCount}b</span>
             </div>
           )}
           {errors.length > 0 && (
             <div className="dro-status-item error">
-              <span>{errors.length} error{errors.length > 1 ? 's' : ''}</span>
+              <span>Lua Error{errors.length > 1 ? 's' : ''}: {errors.length}</span>
+            </div>
+          )}
+          {isExecuting && (
+            <div className="dro-status-item executing">
+              <span>Executing Lua...</span>
             </div>
           )}
         </div>
         <div className="dro-status-right">
           <div className="dro-status-item">
-            <span>Ready</span>
+            <span>{isExecuting ? 'Running' : spectralData ? 'Complete' : 'Ready'}</span>
           </div>
         </div>
       </div>

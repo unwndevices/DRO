@@ -7,16 +7,16 @@ export const theme = {
     backgroundTertiary: '#262626',
     
     // Text colors
-    amber: '#FFBF00',
-    amberDark: '#E6AC00',
-    amberLight: '#FFD233',
-    textPrimary: '#FFBF00',
+    amber: '#F68537',
+    amberDark: '#de630e',
+    amberLight: '#ff9d59',
+    textPrimary: '#F68537',
     textSecondary: '#CCCCCC',
     textMuted: '#999999',
     
     // UI colors
-    border: '#FFBF00',
-    borderMuted: '#664D00',
+    border: '#F68537',
+    borderMuted: '#de630e',
     success: '#00FF00',
     error: '#FF4444',
     warning: '#FFAA00',
@@ -24,7 +24,7 @@ export const theme = {
     // Editor colors
     editorBackground: '#181818',
     editorSelection: '#333300',
-    editorCursor: '#FFBF00',
+    editorCursor: '#F68537',
     editorGutter: '#262626',
     editorLineNumber: '#666666',
   },

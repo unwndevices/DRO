@@ -1,0 +1,252 @@
+.dro-simple-spectrum-chart {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #181818;
+  border: 1px solid #664D00;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dro-simple-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background: rgba(24, 24, 24, 0.95);
+  border-bottom: 1px solid #664D00;
+  font-family: 'Fira Mono', monospace;
+}
+
+.dro-play-button {
+  background: #FFBF00;
+  color: #181818;
+  border: none;
+  border-radius: 3px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  outline: none;
+  min-width: 50px;
+}
+
+.dro-play-button:hover {
+  background: #FFD700;
+  box-shadow: 0 0 6px rgba(255, 191, 0, 0.5);
+}
+
+.dro-play-button:active {
+  transform: translateY(1px);
+}
+
+.dro-frame-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.dro-frame-info {
+  color: #CCCCCC;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 90px;
+}
+
+.dro-frame-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  background: #333333;
+  height: 6px;
+  border-radius: 3px;
+  outline: none;
+  transition: background 0.2s;
+}
+
+.dro-frame-slider:hover {
+  background: #444444;
+}
+
+.dro-frame-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #FFBF00;
+  cursor: pointer;
+  border: 2px solid #181818;
+  transition: all 0.2s;
+}
+
+.dro-frame-slider::-webkit-slider-thumb:hover {
+  background: #FFD700;
+  transform: scale(1.1);
+  box-shadow: 0 0 6px rgba(255, 191, 0, 0.5);
+}
+
+.dro-frame-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #FFBF00;
+  cursor: pointer;
+  border: 2px solid #181818;
+  transition: all 0.2s;
+}
+
+.dro-chart-container {
+  flex: 1;
+  position: relative;
+  min-height: 0; /* Allow flex shrinking */
+}
+
+.dro-simple-chart-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: default;
+}
+
+.dro-chart-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(24, 24, 24, 0.8));
+  padding: 8px 12px 4px;
+  pointer-events: none;
+}
+
+.dro-chart-stats {
+  display: flex;
+  gap: 16px;
+  font-family: 'Fira Mono', monospace;
+  font-size: 10px;
+  color: #999999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dro-chart-stats span {
+  padding: 2px 4px;
+  background: rgba(24, 24, 24, 0.7);
+  border-radius: 2px;
+  border: 1px solid rgba(102, 77, 0, 0.3);
+}
+
+.dro-chart-stats span:first-child {
+  color: #FFBF00;
+  border-color: rgba(255, 191, 0, 0.5);
+  font-weight: 600;
+}
+
+/* Empty state */
+.dro-simple-spectrum-chart.empty {
+  opacity: 0.6;
+}
+
+.dro-simple-spectrum-chart.empty .dro-simple-chart-canvas {
+  filter: grayscale(100%);
+}
+
+.dro-simple-spectrum-chart.empty::after {
+  content: 'Execute Lua script to generate spectral data visualization';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #666666;
+  font-family: 'Fira Mono', monospace;
+  font-size: 12px;
+  text-align: center;
+  pointer-events: none;
+  z-index: 10;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Loading state */
+.dro-simple-spectrum-chart.loading::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(24, 24, 24, 0.8);
+  z-index: 20;
+}
+
+.dro-simple-spectrum-chart.loading::after {
+  content: 'Executing Lua...';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #FFBF00;
+  font-family: 'Fira Mono', monospace;
+  font-size: 12px;
+  z-index: 21;
+  animation: pulse 1.5s ease-in-out infinite;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .dro-simple-controls {
+    padding: 8px;
+    gap: 12px;
+  }
+  
+  .dro-frame-info {
+    font-size: 10px;
+    min-width: 80px;
+  }
+  
+  .dro-chart-stats {
+    gap: 12px;
+    font-size: 9px;
+  }
+  
+  .dro-chart-stats span {
+    padding: 1px 3px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dro-simple-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .dro-frame-controls {
+    width: 100%;
+  }
+  
+  .dro-chart-stats {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+/* Focus and accessibility */
+.dro-play-button:focus,
+.dro-frame-slider:focus {
+  box-shadow: 0 0 0 2px rgba(255, 191, 0, 0.3);
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .dro-simple-chart-canvas {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+} 

@@ -15,7 +15,7 @@ html {
 body {
   font-family: 'Fira Mono', 'Monaco', 'Consolas', 'Courier New', monospace;
   background-color: #181818;
-  color: #FFBF00;
+  color: #F68537;
   line-height: 1.4;
   height: 100%;
   overflow: hidden;
@@ -35,7 +35,7 @@ body {
   display: flex;
   flex-direction: column;
   background: #181818;
-  color: #FFBF00;
+  color: #F68537;
   font-family: 'Fira Mono', monospace;
 }
 
@@ -43,7 +43,7 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Fira Mono', monospace;
   font-weight: 500;
-  color: #FFBF00;
+  color: #F68537;
 }
 
 h1 { font-size: 1.5rem; }
@@ -60,8 +60,8 @@ p {
 button {
   font-family: inherit;
   background: transparent;
-  border: 1px solid #FFBF00;
-  color: #FFBF00;
+  border: 1px solid #F68537;
+  color: #F68537;
   padding: 4px 12px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -88,14 +88,14 @@ input, textarea {
   font-family: inherit;
   background: #1e1e1e;
   border: 1px solid #664D00;
-  color: #FFBF00;
+  color: #F68537;
   padding: 4px 8px;
   font-size: 0.875rem;
 }
 
 input:focus, textarea:focus {
   outline: none;
-  border-color: #FFBF00;
+  border-color: #F68537;
   box-shadow: 0 0 0 1px rgba(255, 191, 0, 0.3);
 }
 
@@ -115,27 +115,27 @@ input:focus, textarea:focus {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #FFBF00;
+  background: #F68537;
 }
 
 /* Selection */
 ::selection {
   background: rgba(255, 191, 0, 0.3);
-  color: #FFBF00;
+  color: #F68537;
 }
 
 ::-moz-selection {
   background: rgba(255, 191, 0, 0.3);
-  color: #FFBF00;
+  color: #F68537;
 }
 
 /* Utility classes */
-.text-amber { color: #FFBF00; }
+.text-amber { color: #F68537; }
 .text-muted { color: #999999; }
 .text-secondary { color: #CCCCCC; }
 .bg-primary { background-color: #181818; }
 .bg-secondary { background-color: #1e1e1e; }
-.border-amber { border-color: #FFBF00; }
+.border-amber { border-color: #F68537; }
 
 /* Layout utilities */
 .flex { display: flex; }

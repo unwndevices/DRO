@@ -1,0 +1,192 @@
+.dro-chart-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 12px;
+  background: rgba(24, 24, 24, 0.9);
+  border-bottom: 1px solid #664D00;
+  align-items: center;
+  font-family: 'Fira Mono', monospace;
+  font-size: 12px;
+}
+
+.dro-control-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.dro-control-group.dro-frame-slider {
+  flex: 1;
+  min-width: 200px;
+}
+
+.dro-control-label {
+  color: #CCCCCC;
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dro-select {
+  background: #181818;
+  border: 1px solid #664D00;
+  color: #FFBF00;
+  padding: 4px 8px;
+  border-radius: 2px;
+  font-family: 'Fira Mono', monospace;
+  font-size: 11px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.dro-select:focus {
+  border-color: #FFBF00;
+  box-shadow: 0 0 0 1px rgba(255, 191, 0, 0.3);
+}
+
+.dro-select option {
+  background: #181818;
+  color: #FFBF00;
+}
+
+.dro-button {
+  background: #181818;
+  border: 1px solid #664D00;
+  color: #CCCCCC;
+  padding: 6px 12px;
+  border-radius: 2px;
+  font-family: 'Fira Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+  outline: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dro-button:hover {
+  border-color: #FFBF00;
+  color: #FFBF00;
+  box-shadow: 0 0 4px rgba(255, 191, 0, 0.3);
+}
+
+.dro-button-primary {
+  background: #FFBF00;
+  color: #181818;
+  border-color: #FFBF00;
+  font-size: 14px;
+  min-width: 40px;
+}
+
+.dro-button-primary:hover {
+  background: #FFD700;
+  border-color: #FFD700;
+  box-shadow: 0 0 6px rgba(255, 191, 0, 0.5);
+}
+
+.dro-button-secondary {
+  font-size: 10px;
+  padding: 4px 8px;
+  min-width: 45px;
+}
+
+.dro-frame-info {
+  color: #999999;
+  font-size: 11px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.dro-slider {
+  -webkit-appearance: none;
+  background: #333333;
+  height: 6px;
+  border-radius: 3px;
+  outline: none;
+  transition: background 0.2s;
+}
+
+.dro-slider:hover {
+  background: #444444;
+}
+
+.dro-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #FFBF00;
+  cursor: pointer;
+  border: 2px solid #181818;
+  transition: all 0.2s;
+}
+
+.dro-slider::-webkit-slider-thumb:hover {
+  background: #FFD700;
+  transform: scale(1.1);
+  box-shadow: 0 0 6px rgba(255, 191, 0, 0.5);
+}
+
+.dro-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #FFBF00;
+  cursor: pointer;
+  border: 2px solid #181818;
+  transition: all 0.2s;
+}
+
+.dro-frame-slider .dro-slider {
+  flex: 1;
+  min-width: 150px;
+}
+
+.dro-zoom-slider {
+  width: 80px;
+}
+
+.dro-zoom-value {
+  color: #999999;
+  font-size: 10px;
+  min-width: 30px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .dro-chart-controls {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .dro-control-group {
+    justify-content: space-between;
+  }
+  
+  .dro-control-group.dro-frame-slider {
+    min-width: unset;
+  }
+  
+  .dro-frame-slider .dro-slider {
+    min-width: 120px;
+  }
+}
+
+/* Animation for active states */
+.dro-button:active {
+  transform: translateY(1px);
+}
+
+.dro-slider:active::-webkit-slider-thumb {
+  transform: scale(1.2);
+}
+
+/* Glow effect for focus states */
+.dro-select:focus,
+.dro-button:focus {
+  box-shadow: 0 0 0 2px rgba(255, 191, 0, 0.3);
+} 

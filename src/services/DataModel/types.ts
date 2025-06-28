@@ -30,6 +30,18 @@ export interface PlaybackState {
   currentFrame: number;
   playbackSpeed: number; // frames per second
   loop: boolean;
+  direction: 'forward' | 'backward';
+  autoAdvance: boolean;
+}
+
+export interface ExportOptions {
+  format: 'json' | 'csv' | 'png' | 'svg';
+  includeMetadata: boolean;
+  frameRange?: {
+    start: number;
+    end: number;
+  };
+  compression?: boolean;
 }
 
 export interface EditorState {
@@ -56,6 +68,9 @@ export interface VisualizationSettings {
   barWidth: number;
   maxHeight: number;
   colorScheme: 'amber' | 'rainbow' | 'grayscale';
+  chartType: 'bars' | 'line' | 'waterfall' | 'surface';
+  zoom: number;
+  enableExport: boolean;
 }
 
 export interface AppSettings {
@@ -88,6 +103,11 @@ export type AppEvent =
   | { type: 'PLAYBACK_STOPPED' }
   | { type: 'FRAME_CHANGED'; payload: { frameIndex: number } }
   | { type: 'SCRIPT_SAVED'; payload: { script: LuaScript } }
-  | { type: 'SCRIPT_LOADED'; payload: { script: LuaScript } };
+  | { type: 'SCRIPT_LOADED'; payload: { script: LuaScript } }
+  | { type: 'CHART_TYPE_CHANGED'; payload: { chartType: string } }
+  | { type: 'ZOOM_CHANGED'; payload: { zoom: number } }
+  | { type: 'EXPORT_STARTED'; payload: { format: string } }
+  | { type: 'EXPORT_COMPLETED'; payload: { format: string; filename: string } }
+  | { type: 'EXPORT_FAILED'; payload: { format: string; error: string } };
 
 export type EventHandler<T extends AppEvent> = (event: T) => void; 

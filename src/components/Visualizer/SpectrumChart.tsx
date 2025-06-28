@@ -82,6 +82,9 @@ export const SpectrumChart: React.FC<SpectrumChartProps> = ({
     const minValue = Math.min(...bands);
     const range = maxValue - minValue;
 
+    // Debug logging for visualization issues
+    console.log('Chart Debug - bands:', bands.length, 'range:', minValue.toFixed(3), '→', maxValue.toFixed(3));
+
     bands.forEach((value, index) => {
       // Normalize value to 0-1 range
       const normalizedValue = range === 0 ? 0.5 : (value - minValue) / range;

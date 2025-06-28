@@ -70,9 +70,11 @@
 
 .dro-panel-content {
   flex: 1;
-  overflow: hidden;
+  overflow: auto;
   position: relative;
   background: #181818;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Panel Variants */
