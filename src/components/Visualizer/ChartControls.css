@@ -1,19 +1,19 @@
 .dro-chart-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: var(--spacing-md);
   padding: 12px;
-  background: rgba(24, 24, 24, 0.9);
-  border-bottom: 1px solid #664D00;
+  background: rgba(var(--color-background-rgb, 24, 24, 24), 0.9);
+  border-bottom: 1px solid var(--color-border-muted);
   align-items: center;
-  font-family: 'Fira Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
 }
 
 .dro-control-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--spacing-sm);
   white-space: nowrap;
 }
 
@@ -23,7 +23,7 @@
 }
 
 .dro-control-label {
-  color: #CCCCCC;
+  color: var(--color-text-secondary);
   font-weight: 500;
   font-size: 11px;
   text-transform: uppercase;
@@ -31,34 +31,34 @@
 }
 
 .dro-select {
-  background: #181818;
-  border: 1px solid #664D00;
-  color: #FFBF00;
+  background: var(--color-background);
+  border: 1px solid var(--color-border-muted);
+  color: var(--color-amber);
   padding: 4px 8px;
-  border-radius: 2px;
-  font-family: 'Fira Mono', monospace;
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-mono);
   font-size: 11px;
   outline: none;
   transition: border-color 0.2s;
 }
 
 .dro-select:focus {
-  border-color: #FFBF00;
-  box-shadow: 0 0 0 1px rgba(255, 191, 0, 0.3);
+  border-color: var(--color-amber);
+  box-shadow: 0 0 0 1px rgba(var(--color-glow-rgb), 0.3);
 }
 
 .dro-select option {
-  background: #181818;
-  color: #FFBF00;
+  background: var(--color-background);
+  color: var(--color-amber);
 }
 
 .dro-button {
-  background: #181818;
-  border: 1px solid #664D00;
-  color: #CCCCCC;
+  background: var(--color-background);
+  border: 1px solid var(--color-border-muted);
+  color: var(--color-text-secondary);
   padding: 6px 12px;
-  border-radius: 2px;
-  font-family: 'Fira Mono', monospace;
+  border-radius: var(--border-radius-sm);
+  font-family: var(--font-mono);
   font-size: 11px;
   cursor: pointer;
   transition: all 0.2s;
@@ -68,23 +68,23 @@
 }
 
 .dro-button:hover {
-  border-color: #FFBF00;
-  color: #FFBF00;
-  box-shadow: 0 0 4px rgba(255, 191, 0, 0.3);
+  border-color: var(--color-amber);
+  color: var(--color-amber);
+  box-shadow: var(--shadow-glow);
 }
 
 .dro-button-primary {
-  background: #FFBF00;
-  color: #181818;
-  border-color: #FFBF00;
+  background: var(--color-amber);
+  color: var(--color-background);
+  border-color: var(--color-amber);
   font-size: 14px;
   min-width: 40px;
 }
 
 .dro-button-primary:hover {
-  background: #FFD700;
-  border-color: #FFD700;
-  box-shadow: 0 0 6px rgba(255, 191, 0, 0.5);
+  background: var(--color-amber-light);
+  border-color: var(--color-amber-light);
+  box-shadow: var(--shadow-glow-strong);
 }
 
 .dro-button-secondary {
@@ -94,7 +94,7 @@
 }
 
 .dro-frame-info {
-  color: #999999;
+  color: var(--color-text-muted);
   font-size: 11px;
   min-width: 60px;
   text-align: center;
@@ -102,7 +102,7 @@
 
 .dro-slider {
   -webkit-appearance: none;
-  background: #333333;
+  background: var(--color-background-tertiary);
   height: 6px;
   border-radius: 3px;
   outline: none;
@@ -110,7 +110,7 @@
 }
 
 .dro-slider:hover {
-  background: #444444;
+  background: var(--color-background-secondary);
 }
 
 .dro-slider::-webkit-slider-thumb {
@@ -118,25 +118,25 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #FFBF00;
+  background: var(--color-amber);
   cursor: pointer;
-  border: 2px solid #181818;
+  border: 2px solid var(--color-background);
   transition: all 0.2s;
 }
 
 .dro-slider::-webkit-slider-thumb:hover {
-  background: #FFD700;
+  background: var(--color-amber-light);
   transform: scale(1.1);
-  box-shadow: 0 0 6px rgba(255, 191, 0, 0.5);
+  box-shadow: var(--shadow-glow-strong);
 }
 
 .dro-slider::-moz-range-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  background: #FFBF00;
+  background: var(--color-amber);
   cursor: pointer;
-  border: 2px solid #181818;
+  border: 2px solid var(--color-background);
   transition: all 0.2s;
 }
 
@@ -150,7 +150,7 @@
 }
 
 .dro-zoom-value {
-  color: #999999;
+  color: var(--color-text-muted);
   font-size: 10px;
   min-width: 30px;
 }
@@ -188,5 +188,5 @@
 /* Glow effect for focus states */
 .dro-select:focus,
 .dro-button:focus {
-  box-shadow: 0 0 0 2px rgba(255, 191, 0, 0.3);
+  box-shadow: 0 0 0 2px rgba(var(--color-glow-rgb), 0.3);
 } 

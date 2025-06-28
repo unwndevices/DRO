@@ -1,4 +1,9 @@
 import React, { useState, useCallback } from 'react';
+import CodeMirror from '@uiw/react-codemirror';
+import { StreamLanguage } from '@codemirror/language';
+import { lua } from '@codemirror/legacy-modes/mode/lua';
+import { keymap } from '@codemirror/view';
+import { amberEditorTheme } from './editorTheme';
 import './CodeEditor.css';
 
 interface CodeEditorProps {
@@ -10,6 +15,8 @@ interface CodeEditorProps {
     line?: number;
   }>;
   className?: string;
+  frameCount: number;
+  onFrameCountChange: (count: number) => void;
 }
 
 export const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -17,99 +24,44 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   onChange,
   onExecute,
   errors = [],
-  className = ''
+  className = '',
+  frameCount,
+  onFrameCountChange,
 }) => {
   const [lastExecutionTime, setLastExecutionTime] = useState<number | null>(null);
 
-  const handleChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    onChange(event.target.value);
+  const handleExecute = useCallback(() => {
+    if (onExecute) {
+      const startTime = performance.now();
+      onExecute(value);
+      setLastExecutionTime(performance.now() - startTime);
+    }
+  }, [onExecute, value]);
+
+  const onEditorChange = useCallback((val: string) => {
+    onChange(val);
   }, [onChange]);
 
-  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Ctrl+Enter or Cmd+Enter to execute
-    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
-      event.preventDefault();
-      if (onExecute) {
-        const startTime = performance.now();
-        onExecute(value);
-        setLastExecutionTime(performance.now() - startTime);
-      }
-    }
-    
-    // Tab support
-    if (event.key === 'Tab') {
-      event.preventDefault();
-      const target = event.target as HTMLTextAreaElement;
-      const start = target.selectionStart;
-      const end = target.selectionEnd;
-      
-      if (event.shiftKey) {
-        // Unindent (remove 2 spaces at start of line)
-        const lines = value.split('\n');
-        const startLine = value.substring(0, start).split('\n').length - 1;
-        const endLine = value.substring(0, end).split('\n').length - 1;
-        
-        for (let i = startLine; i <= endLine; i++) {
-          if (lines[i].startsWith('  ')) {
-            lines[i] = lines[i].substring(2);
-          }
-        }
-        
-        onChange(lines.join('\n'));
-      } else {
-        // Indent (add 2 spaces)
-        const newValue = value.substring(0, start) + '  ' + value.substring(end);
-        onChange(newValue);
-        
-        // Restore cursor position
-        setTimeout(() => {
-          target.selectionStart = target.selectionEnd = start + 2;
-        }, 0);
-      }
-    }
-  }, [value, onChange, onExecute]);
-
-  const defaultScript = `-- DRO Lua Script
--- Create a 20-band spectral datum
-local datum = DRO.createDatum(128, 20)
-
--- Generate spectral data
-for frame = 1, 128 do
-  for band = 1, 20 do
-    -- Example: sine wave pattern
-    local frequency = band * 0.5
-    local amplitude = math.sin(frame * frequency * 0.1)
-    datum:getFrame(frame):setBand(band, amplitude)
-  end
-end
-
--- Update visualization
-DRO.updateVisualization(datum)
-DRO.log("Generated 128 frames with 20 bands each")`;
-
-  const displayValue = value || defaultScript;
+  const runKeymap = [{
+    key: 'Ctrl-Enter',
+    mac: 'Cmd-Enter',
+    run: () => { handleExecute(); return true; },
+  }];
 
   return (
     <div className={`dro-code-editor ${className}`}>
       <div className="dro-editor-container">
-        <textarea
-          className="dro-editor-textarea"
-          value={displayValue}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          placeholder="-- Enter Lua code here..."
-          spellCheck={false}
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
+        <CodeMirror
+          value={value}
+          height="100%"
+          extensions={[
+            StreamLanguage.define(lua),
+            keymap.of(runKeymap),
+            ...amberEditorTheme,
+          ]}
+          onChange={onEditorChange}
+          className="dro-codemirror-instance"
         />
-        <div className="dro-editor-gutter">
-          {displayValue.split('\n').map((_, index) => (
-            <div key={index} className="dro-editor-line-number">
-              {index + 1}
-            </div>
-          ))}
-        </div>
       </div>
       
       {errors.length > 0 && (
@@ -126,6 +78,18 @@ DRO.log("Generated 128 frames with 20 bands each")`;
       <div className="dro-editor-footer">
         <div className="dro-editor-info">
           <span>Ctrl+Enter to execute</span>
+          <div className="dro-frame-count-control">
+            <label htmlFor="frame-count-input">Frames:</label>
+            <input
+              id="frame-count-input"
+              type="number"
+              value={frameCount}
+              onChange={(e) => onFrameCountChange(parseInt(e.target.value, 10))}
+              min="1"
+              max="1024"
+              step="1"
+            />
+          </div>
           {lastExecutionTime && (
             <span>Last execution: {lastExecutionTime.toFixed(1)}ms</span>
           )}
@@ -133,7 +97,7 @@ DRO.log("Generated 128 frames with 20 bands each")`;
         {onExecute && (
           <button 
             className="dro-execute-button"
-            onClick={() => onExecute(displayValue)}
+            onClick={handleExecute}
             title="Execute Script (Ctrl+Enter)"
           >
             RUN

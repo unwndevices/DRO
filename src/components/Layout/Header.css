@@ -1,7 +1,7 @@
 .dro-header {
-  background: #1e1e1e;
-  border-bottom: 1px solid #FFBF00;
-  padding: 8px 16px;
+  background: var(--color-background-secondary);
+  border-bottom: 1px solid var(--color-amber);
+  padding: var(--spacing-sm) var(--spacing-md);
   flex-shrink: 0;
 }
 
@@ -22,57 +22,95 @@
 .dro-title-main {
   font-size: 1.5rem;
   font-weight: 600;
-  color: #FFBF00;
+  color: var(--color-amber);
   letter-spacing: 2px;
 }
 
 .dro-title-sub {
   font-size: 0.75rem;
-  color: #999999;
+  color: var(--color-text-muted);
   font-weight: 400;
   letter-spacing: 1px;
 }
 
 .dro-nav {
   display: flex;
-  gap: 8px;
+  gap: var(--spacing-sm);
   align-items: center;
 }
 
 .dro-nav-button {
   background: transparent;
-  border: 1px solid #664D00;
-  color: #CCCCCC;
+  border: 1px solid var(--color-border-muted);
+  color: var(--color-text-secondary);
   padding: 4px 12px;
   font-size: 0.75rem;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
   letter-spacing: 0.5px;
   text-transform: uppercase;
 }
 
 .dro-nav-button:hover {
-  border-color: #FFBF00;
-  color: #FFBF00;
-  background: rgba(255, 191, 0, 0.05);
+  background-color: var(--color-background-tertiary);
 }
 
 .dro-nav-button:focus {
   outline: none;
-  border-color: #FFBF00;
-  box-shadow: 0 0 0 1px rgba(255, 191, 0, 0.3);
+  border-color: var(--color-amber);
+  box-shadow: 0 0 0 1px rgba(var(--color-glow-rgb), 0.3);
 }
 
 .dro-nav-button:active {
-  background: rgba(255, 191, 0, 0.1);
+  background: rgba(var(--color-glow-rgb), 0.1);
+}
+
+.dro-nav-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dro-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--color-background-secondary);
+  border: 1px solid var(--color-border-muted);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-glow);
+  padding: var(--spacing-sm);
+  z-index: 1000;
+  width: 220px;
+  margin-top: var(--spacing-sm);
+}
+
+.dro-dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  text-align: left;
+  font-size: 14px;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dro-dropdown-item:hover {
+  background-color: var(--color-background-tertiary);
+  color: var(--color-text-primary);
 }
 
 /* Mobile responsiveness */
 @media (max-width: 768px) {
   .dro-header-content {
     flex-direction: column;
-    gap: 8px;
+    gap: var(--spacing-sm);
     align-items: flex-start;
   }
   

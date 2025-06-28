@@ -1,89 +1,26 @@
 .dro-code-editor {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  background: #181818;
-  position: relative;
+  height: 100%;
+  background: var(--color-background);
+  color: var(--color-text);
+  overflow: hidden; /* Important for flexbox children */
 }
 
 .dro-editor-container {
   flex: 1;
   position: relative;
-  display: flex;
-  overflow: hidden;
+  overflow-y: auto; /* Allow editor to scroll */
 }
 
-.dro-editor-textarea {
-  flex: 1;
-  font-family: 'Fira Mono', 'Monaco', 'Consolas', monospace;
-  font-size: 14px;
-  line-height: 1.5;
-  background: #181818;
-  color: #FFBF00;
-  border: none;
-  outline: none;
-  padding: 12px 12px 12px 60px;
-  resize: none;
-  overflow-y: auto;
-  white-space: pre;
-  tab-size: 2;
-  caret-color: #FFBF00;
+.dro-codemirror-instance {
+  height: 100%;
 }
 
-.dro-editor-textarea::selection {
-  background: rgba(255, 191, 0, 0.3);
-}
-
-.dro-editor-textarea::-webkit-scrollbar {
-  width: 8px;
-}
-
-.dro-editor-textarea::-webkit-scrollbar-track {
-  background: #262626;
-}
-
-.dro-editor-textarea::-webkit-scrollbar-thumb {
-  background: #664D00;
-  border-radius: 4px;
-}
-
-.dro-editor-textarea::-webkit-scrollbar-thumb:hover {
-  background: #FFBF00;
-}
-
-.dro-editor-gutter {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 50px;
-  background: #262626;
-  border-right: 1px solid #664D00;
-  padding: 12px 8px;
-  font-family: 'Fira Mono', monospace;
-  font-size: 12px;
-  line-height: 1.5;
-  color: #666666;
-  user-select: none;
-  overflow: hidden;
-}
-
-.dro-editor-line-number {
-  text-align: right;
-  height: 21px; /* Match line height */
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.dro-editor-line-number:hover {
-  color: #FFBF00;
-}
-
-/* Error Display */
+/* Error display styling */
 .dro-editor-errors {
-  background: rgba(255, 68, 68, 0.1);
-  border-top: 1px solid #FF4444;
+  background: rgba(var(--color-error-rgb, 255, 68, 68), 0.1);
+  border-top: 1px solid var(--color-error);
   max-height: 120px;
   overflow-y: auto;
   flex-shrink: 0;
@@ -92,9 +29,9 @@
 .dro-editor-error {
   padding: 6px 12px;
   font-size: 12px;
-  color: #FF4444;
-  font-family: 'Fira Mono', monospace;
-  border-bottom: 1px solid rgba(255, 68, 68, 0.2);
+  color: var(--color-error);
+  font-family: var(--font-mono);
+  border-bottom: 1px solid rgba(var(--color-error-rgb, 255, 68, 68), 0.2);
 }
 
 .dro-editor-error:last-child {
@@ -102,54 +39,92 @@
 }
 
 .dro-error-line {
-  color: #FFAA00;
-  margin-right: 8px;
+  color: var(--color-warning);
+  margin-right: var(--spacing-sm);
   font-weight: 500;
 }
 
 .dro-error-message {
-  color: #FF4444;
+  color: var(--color-error);
 }
 
 /* Footer */
 .dro-editor-footer {
-  background: #1e1e1e;
-  border-top: 1px solid #664D00;
-  padding: 6px 12px;
+  background: rgba(var(--color-background-rgb), 0.95);
+  border-top: 1px solid var(--color-border-muted);
+  padding: 12px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 11px;
-  color: #999999;
+  color: var(--color-text-muted);
   flex-shrink: 0;
+  font-family: var(--font-mono);
 }
 
 .dro-editor-info {
   display: flex;
-  gap: 16px;
   align-items: center;
+  gap: var(--spacing-md);
+  font-size: 11px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dro-frame-count-control {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.dro-frame-count-control label {
+  color: var(--color-text-secondary);
+  min-width: 60px;
+}
+
+.dro-frame-count-control input {
+  background: var(--color-background-tertiary);
+  border: 1px solid var(--color-border-muted);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  border-radius: var(--border-radius-sm);
+  width: 60px;
+  padding: 4px 6px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.dro-frame-count-control input:focus {
+  border-color: var(--color-amber);
+  background: var(--color-background-secondary);
+  box-shadow: 0 0 0 2px rgba(var(--color-glow-rgb), 0.2);
 }
 
 .dro-execute-button {
-  background: transparent;
-  border: 1px solid #FFBF00;
-  color: #FFBF00;
-  padding: 4px 12px;
-  font-size: 11px;
+  background: var(--color-amber);
+  color: var(--color-background);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm) 12px;
+  font-size: 14px;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s;
   letter-spacing: 0.5px;
   font-weight: 500;
+  outline: none;
+  min-width: 50px;
 }
 
 .dro-execute-button:hover {
-  background: rgba(255, 191, 0, 0.1);
-  box-shadow: 0 0 6px rgba(255, 191, 0, 0.4);
+  background: var(--color-amber-light);
+  box-shadow: var(--shadow-glow-strong);
 }
 
 .dro-execute-button:active {
-  background: rgba(255, 191, 0, 0.2);
+  background: rgba(var(--color-glow-rgb), 0.2);
   transform: translateY(1px);
 }
 
@@ -172,29 +147,35 @@
   }
   
   .dro-editor-footer {
+    padding: var(--spacing-sm);
+    gap: 12px;
     flex-direction: column;
-    gap: 6px;
     align-items: stretch;
   }
   
   .dro-editor-info {
     justify-content: center;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 12px;
   }
   
   .dro-execute-button {
     align-self: center;
     min-width: 80px;
   }
+  
+  .dro-frame-count-control label {
+    min-width: 50px;
+    font-size: 10px;
+  }
 }
 
 /* Focus States */
 .dro-code-editor:focus-within .dro-editor-gutter {
-  border-right-color: #FFBF00;
-  background: rgba(255, 191, 0, 0.05);
+  border-right-color: var(--color-amber);
+  background: rgba(var(--color-glow-rgb), 0.05);
 }
 
 .dro-code-editor:focus-within .dro-editor-line-number {
-  color: #999999;
+  color: var(--color-text-muted);
 } 

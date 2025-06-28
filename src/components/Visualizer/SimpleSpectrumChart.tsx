@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { FaPlay, FaPause } from 'react-icons/fa';
 import './SimpleSpectrumChart.css';
 import type { SpectralFrame } from '../../services/DataModel/types.ts';
 
@@ -69,7 +70,10 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
   const drawBarsChart = (ctx: CanvasRenderingContext2D, bands: number[], width: number, height: number) => {
     if (!bands || bands.length === 0) return;
 
-    const barWidth = width / bands.length;
+    // Add horizontal margins to prevent bars from touching edges
+    const margin = 20;
+    const drawableWidth = width - (2 * margin);
+    const barWidth = drawableWidth / bands.length;
     const maxHeight = height - 60; // Leave space for labels and controls
 
     // Draw grid lines
@@ -78,21 +82,21 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
     bands.forEach((value, index) => {
       const barHeight = value * maxHeight; // Values are already 0-1
 
-      const x = index * barWidth;
+      const x = margin + (index * barWidth);
       const y = height - barHeight - 40;
 
-      // Draw bar with gradient
-      const gradient = ctx.createLinearGradient(0, y, 0, y + barHeight);
-      gradient.addColorStop(0, '#FFBF00');
-      gradient.addColorStop(1, '#FF8C00');
+      // Draw bar with a solid color and increased gap
+      ctx.fillStyle = '#C7EE1B'; // --color-primary from the theme
       
-      ctx.fillStyle = gradient;
-      ctx.fillRect(x + 1, y, barWidth - 2, barHeight);
+      const gap = barWidth * 0.2; // 20% gap
+      const drawnBarWidth = barWidth - gap;
+      
+      ctx.fillRect(x + (gap / 2), y, drawnBarWidth, barHeight);
 
       // Add glow effect
-      ctx.shadowColor = '#FFBF00';
+      ctx.shadowColor = '#C7EE1B';
       ctx.shadowBlur = 4;
-      ctx.fillRect(x + 1, y, barWidth - 2, barHeight);
+      ctx.fillRect(x + (gap / 2), y, drawnBarWidth, barHeight);
       ctx.shadowBlur = 0;
 
       // Draw band labels
@@ -110,7 +114,11 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
   };
 
   const drawGrid = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
-    ctx.strokeStyle = '#664D00';
+    // Add horizontal margins to match the bars
+    const margin = 20;
+    const drawableWidth = width - (2 * margin);
+    
+    ctx.strokeStyle = '#9EBE0E35';
     ctx.lineWidth = 0.5;
 
     // Horizontal lines
@@ -118,16 +126,16 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
     for (let i = 0; i <= horizontalLines; i++) {
       const y = 20 + ((height - 60) / horizontalLines) * i;
       ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(width, y);
+      ctx.moveTo(margin, y);
+      ctx.lineTo(width - margin, y);
       ctx.stroke();
     }
 
     // Vertical lines (for bands)
     const bands = 20;
-    const barWidth = width / bands;
+    const barWidth = drawableWidth / bands;
     for (let i = 0; i <= bands; i++) {
-      const x = barWidth * i;
+      const x = margin + (barWidth * i);
       ctx.beginPath();
       ctx.moveTo(x, 20);
       ctx.lineTo(x, height - 40);
@@ -136,6 +144,10 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
   };
 
   const drawFrequencyLabels = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+    // Add horizontal margins to match the bars
+    const margin = 20;
+    const drawableWidth = width - (2 * margin);
+    
     ctx.fillStyle = '#999999';
     ctx.font = '10px Fira Mono';
     ctx.textAlign = 'center';
@@ -145,7 +157,7 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
     for (let i = 0; i <= labelCount; i++) {
       const bandIndex = (i / labelCount) * 19; // 0 to 19
       const frequency = getFrequencyForBand(bandIndex);
-      const x = (i / labelCount) * width;
+      const x = margin + (i / labelCount) * drawableWidth;
       
       let label: string;
       if (frequency >= 1000) {
@@ -172,30 +184,6 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
 
   return (
     <div className={`dro-simple-spectrum-chart ${className}`}>
-      <div className="dro-simple-controls">
-        <button
-          className="dro-play-button"
-          onClick={() => setIsPlaying(!isPlaying)}
-          title={isPlaying ? 'Pause' : 'Play'}
-        >
-          {isPlaying ? '⏸️' : '▶️'}
-        </button>
-        
-        <div className="dro-frame-controls">
-          <span className="dro-frame-info">
-            Frame: {currentFrame + 1}/{frameCount}
-          </span>
-          <input
-            type="range"
-            className="dro-frame-slider"
-            min="0"
-            max={Math.max(0, frameCount - 1)}
-            value={currentFrame}
-            onChange={(e) => onFrameChange(parseInt(e.target.value))}
-          />
-        </div>
-      </div>
-      
       <div className="dro-chart-container">
         <canvas
           ref={canvasRef}
@@ -211,6 +199,30 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
               </span>
             )}
           </div>
+        </div>
+      </div>
+
+      <div className="dro-simple-controls">
+        <button
+          className="dro-play-button"
+          onClick={() => setIsPlaying(!isPlaying)}
+          title={isPlaying ? 'Pause' : 'Play'}
+        >
+          {isPlaying ? <FaPause /> : <FaPlay />}
+        </button>
+        
+        <div className="dro-frame-controls">
+          <span className="dro-frame-info">
+            Frame: {currentFrame + 1}/{frameCount}
+          </span>
+          <input
+            type="range"
+            className="dro-frame-slider"
+            min="0"
+            max={Math.max(0, frameCount - 1)}
+            value={currentFrame}
+            onChange={(e) => onFrameChange(parseInt(e.target.value))}
+          />
         </div>
       </div>
     </div>

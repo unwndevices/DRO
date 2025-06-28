@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaPlay, FaPause } from 'react-icons/fa';
 import './ChartControls.css';
 
 // Chart type definition
@@ -61,7 +62,7 @@ export const ChartControls: React.FC<ChartControlsProps> = ({
           onClick={onPlayPause}
           title={isPlaying ? 'Pause' : 'Play'}
         >
-          {isPlaying ? '⏸️' : '▶️'}
+          {isPlaying ? <FaPause /> : <FaPlay />}
         </button>
         <span className="dro-frame-info">
           {currentFrame + 1}/{totalFrames}

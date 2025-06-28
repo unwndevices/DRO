@@ -2,32 +2,59 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Header } from './components/Layout/Header';
 import { MainContent, SplitLayout, Panel } from './components/Layout/MainContent';
 import { CodeEditor } from './components/Editor/CodeEditor';
-import { TemplateSelector } from './components/Editor/TemplateSelector';
 import { SimpleSpectrumChart } from './components/Visualizer/SimpleSpectrumChart';
 import { luaService } from './services/LuaEngine/LuaService';
 import type { SpectralFrame, Datum } from './services/DataModel/types.ts';
 import './styles/globals.css';
 
+interface Template {
+  name: string;
+  description: string;
+  getCode: () => string;
+}
+
+const templates: Template[] = [
+  {
+    name: 'Default Spectral',
+    description: 'Frequency-based sine wave with bass boost',
+    getCode: () => luaService.getDefaultTemplate()
+  },
+  {
+    name: 'Simple Test',
+    description: 'Basic test: band index pattern',
+    getCode: () => luaService.getSimpleTestTemplate()
+  },
+  {
+    name: 'Diagonal Test',
+    description: 'Band i lights up at frame i',
+    getCode: () => luaService.getDiagonalTestTemplate()
+  },
+  {
+    name: 'Simple Sine Wave',
+    description: 'Basic sine wave across all bands',
+    getCode: () => luaService.getSineWaveTemplate()
+  },
+  {
+    name: 'Frequency Response',
+    description: 'Low-pass filter response curve',
+    getCode: () => luaService.getFrequencyResponseTemplate()
+  }
+];
+
 function App() {
   const [scriptContent, setScriptContent] = useState('');
   const [spectralData, setSpectralData] = useState<Datum | null>(null);
   const [currentFrame, setCurrentFrame] = useState(0);
+  const [frameCount, setFrameCount] = useState(128);
   const [errors, setErrors] = useState<Array<{ message: string; line?: number }>>([]);
   const [isExecuting, setIsExecuting] = useState(false);
 
-  // Initialize with default template
-  useEffect(() => {
-    const defaultScript = luaService.getDefaultTemplate();
-    setScriptContent(defaultScript);
-  }, []);
-
-  // Real Lua execution with shader-like processing
   const executeLuaScript = useCallback(async (code: string) => {
     setIsExecuting(true);
     setErrors([]);
 
     try {
-      const result = await luaService.executeScript(code);
+      const result = await luaService.executeScript(code, frameCount);
       
       if (result.success && result.datum) {
         setSpectralData(result.datum);
@@ -43,13 +70,24 @@ function App() {
       setErrors([{
         message: error instanceof Error ? error.message : 'Unknown execution error',
         line: 1,
-        type: 'runtime'
       }]);
       console.error('DRO: Execution error:', error);
     } finally {
       setIsExecuting(false);
     }
-  }, []);
+  }, [frameCount]);
+
+  // Initialize with default template and execute it
+  useEffect(() => {
+    const defaultScript = templates[0].getCode();
+    setScriptContent(defaultScript);
+    executeLuaScript(defaultScript);
+  }, [executeLuaScript]);
+
+  const handleTemplateSelect = useCallback((code: string) => {
+    setScriptContent(code);
+    executeLuaScript(code);
+  }, [executeLuaScript]);
 
   const handleSave = useCallback(() => {
     // Mock save functionality
@@ -86,26 +124,27 @@ function App() {
         onSave={handleSave}
         onLoad={handleLoad}
         onSettings={handleSettings}
+        templates={templates}
+        onTemplateSelect={handleTemplateSelect}
       />
       
       <MainContent>
         <SplitLayout
           left={
-            <Panel title="Lua Editor" className="editor">
-              <TemplateSelector
-                onTemplateSelect={setScriptContent}
-              />
+            <Panel title="Script Editor" className="editor">
               <CodeEditor
                 value={scriptContent}
                 onChange={setScriptContent}
                 onExecute={executeLuaScript}
                 errors={errors}
                 className={isExecuting ? 'executing' : ''}
+                frameCount={frameCount}
+                onFrameCountChange={setFrameCount}
               />
             </Panel>
           }
           right={
-            <Panel title="Spectrum Visualization" className="visualizer">
+            <Panel title="Datum Preview" className="visualizer">
               <SimpleSpectrumChart
                 frames={spectralData?.frames || []}
                 currentFrame={currentFrame}
