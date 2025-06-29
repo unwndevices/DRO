@@ -3,6 +3,10 @@ import { Header } from './components/Layout/Header';
 import { MainContent, SplitLayout, Panel } from './components/Layout/MainContent';
 import { CodeEditor } from './components/Editor/CodeEditor';
 import { SimpleSpectrumChart } from './components/Visualizer/SimpleSpectrumChart';
+import { SettingsModal } from './components/UI/SettingsModal';
+import { SettingsProvider, useSettings } from './contexts/SettingsContext';
+import type { Settings } from './types/settings';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { luaService } from './services/LuaEngine/LuaService';
 import type { Datum } from './services/DataModel/types.ts';
 import './styles/globals.css';
@@ -41,13 +45,16 @@ const templates: Template[] = [
   }
 ];
 
-function App() {
+// AppContent component that uses settings context
+const AppContent: React.FC = () => {
+  const { settings, updateSettings } = useSettings();
   const [scriptContent, setScriptContent] = useState('');
   const [spectralData, setSpectralData] = useState<Datum | null>(null);
   const [currentFrame, setCurrentFrame] = useState(0);
   const [frameCount, setFrameCount] = useState(128);
   const [errors, setErrors] = useState<Array<{ message: string; line?: number }>>([]);
   const [isExecuting, setIsExecuting] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const executeLuaScript = useCallback(async (code: string) => {
     setIsExecuting(true);
@@ -114,9 +121,34 @@ function App() {
   }, []);
 
   const handleSettings = useCallback(() => {
-    // Placeholder for settings modal
-    console.log('DRO: Settings not implemented yet');
+    setIsSettingsOpen(true);
   }, []);
+
+  const handleCloseSettings = useCallback(() => {
+    setIsSettingsOpen(false);
+  }, []);
+
+  const handleToggleBiggerEditor = useCallback(() => {
+    updateSettings({
+      layout: {
+        ...settings.layout,
+        biggerEditor: !settings.layout.biggerEditor
+      }
+    });
+  }, [settings.layout, updateSettings]);
+
+  // Setup keyboard shortcuts
+  useKeyboardShortcuts({
+    onToggleBiggerEditor: handleToggleBiggerEditor,
+    onEscape: () => {
+      if (isSettingsOpen) {
+        handleCloseSettings();
+      }
+    },
+    onSave: handleSave,
+    onLoad: handleLoad,
+    onExecute: () => executeLuaScript(scriptContent),
+  });
 
   return (
     <div className="dro-app">
@@ -183,7 +215,20 @@ function App() {
           </div>
         </div>
       </div>
+
+      <SettingsModal 
+        isOpen={isSettingsOpen}
+        onClose={handleCloseSettings}
+      />
     </div>
+  );
+};
+
+function App() {
+  return (
+    <SettingsProvider>
+      <AppContent />
+    </SettingsProvider>
   );
 }
 

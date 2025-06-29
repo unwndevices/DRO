@@ -3,6 +3,7 @@ import CodeMirror from '@uiw/react-codemirror';
 import { StreamLanguage } from '@codemirror/language';
 import { lua } from '@codemirror/legacy-modes/mode/lua';
 import { keymap } from '@codemirror/view';
+import { Prec } from '@codemirror/state';
 import { autocompletion, completionKeymap, CompletionContext } from '@codemirror/autocomplete';
 import { foldGutter, codeFolding } from '@codemirror/language';
 import { lineNumbers, highlightActiveLineGutter } from '@codemirror/view';
@@ -475,6 +476,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   const [lastExecutionTime, setLastExecutionTime] = useState<number | null>(null);
 
   const handleExecute = useCallback(() => {
+    console.log('DRO: CodeEditor handleExecute called');
     if (onExecute) {
       const startTime = performance.now();
       onExecute(value);
@@ -486,11 +488,16 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     onChange(val);
   }, [onChange]);
 
-  const runKeymap = [{
+  const runKeymap = Prec.high(keymap.of([{
     key: 'Ctrl-Enter',
     mac: 'Cmd-Enter',
-    run: () => { handleExecute(); return true; },
-  }];
+    preventDefault: true,
+    run: () => { 
+      console.log('DRO: CodeEditor Ctrl+Enter keymap triggered');
+      handleExecute(); 
+      return true; // Important: return true to prevent further processing
+    },
+  }]));
 
   return (
     <div className={`dro-code-editor ${className}`}>
@@ -509,7 +516,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
             autocompletion({
               override: [luaLocalVariablesCompletion, luaGlobalsCompletion, luaStdLibCompletion]
             }),
-            keymap.of([...completionKeymap, ...runKeymap]),
+            runKeymap,
+            keymap.of(completionKeymap),
             ...amberEditorTheme,
           ]}
           onChange={onEditorChange}

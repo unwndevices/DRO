@@ -1,31 +1,32 @@
 /* DRO Global Styles - Retro Terminal Theme */
 
 :root {
-  /* Theme variables from theme.ts */
-  --color-background: #181818;
-  --color-background-secondary: #2b2b2b;
-  --color-background-tertiary: #262626;
-  --color-text-primary: #C7EE1B;
+  /* Theme variables - will be set by JavaScript before React loads */
+  /* Fallback colors for initial load */
+  --color-background: var(--initial-bg, #181818);
+  --color-background-secondary: var(--initial-bg-secondary, #2b2b2b);
+  --color-background-tertiary: var(--initial-bg-tertiary, #262626);
+  --color-text-primary: var(--initial-accent, #C7EE1B);
   --color-text-secondary: #CCCCCC;
   --color-text-muted: #999999;
-  --color-border: #C7EE1B;
-  --color-border-muted: #9EBE0E;
+  --color-border: var(--initial-accent, #C7EE1B);
+  --color-border-muted: var(--initial-accent-dark, #9EBE0E);
   --color-success: #00FF00;
   --color-error: #FF4444;
   --color-warning: #FFAA00;
-  --color-editor-background: #181818;
+  --color-editor-background: var(--initial-bg, #181818);
   --color-editor-selection: #333300;
-  --color-editor-cursor: #C7EE1B;
-  --color-editor-gutter: #181818;
+  --color-editor-cursor: var(--initial-accent, #C7EE1B);
+  --color-editor-gutter: var(--initial-bg-tertiary, #181818);
   --color-editor-line-number: #666666;
-  --color-amber: #C7EE1B;
-  --color-amber-dark: #9EBE0E;
-  --color-amber-light: #D1F141;
+  --color-amber: var(--initial-accent, #C7EE1B);
+  --color-amber-dark: var(--initial-accent-dark, #9EBE0E);
+  --color-amber-light: var(--initial-accent-light, #D1F141);
 
-  --color-background-rgb: 24, 24, 24;
-  --color-glow-rgb: 157, 185, 35;
+  --color-background-rgb: var(--initial-bg-rgb, 24, 24, 24);
+  --color-glow-rgb: var(--initial-accent-rgb, 199, 238, 27);
   --color-error-rgb: 255, 68, 68;
-  --color-border-muted-rgb: 102, 77, 0;
+  --color-border-muted-rgb: var(--initial-accent-dark-rgb, 158, 190, 14);
 
   --font-mono: 'Fira Mono', 'Monaco', 'Consolas', 'Courier New', monospace;
 

@@ -89,6 +89,124 @@ export const amberTheme = EditorView.theme({
     backgroundColor: 'rgba(var(--color-glow-rgb), 0.1)',
   },
 
+  // Lint gutter styling
+  '.cm-lintGutter': {
+    width: '16px',
+    backgroundColor: 'var(--color-editor-gutter)',
+  },
+
+  '.cm-lintGutter .cm-gutterElement': {
+    padding: '0 2px',
+    cursor: 'pointer',
+  },
+
+  // Lint markers
+  '.cm-lintPoint': {
+    position: 'relative',
+  },
+
+  '.cm-lintPoint::after': {
+    content: '●',
+    position: 'absolute',
+    left: '4px',
+    top: '1px',
+    fontSize: '8px',
+    lineHeight: '1',
+  },
+
+  '.cm-lintPoint[data-severity="error"]::after': {
+    color: 'var(--color-error)',
+  },
+
+  '.cm-lintPoint[data-severity="warning"]::after': {
+    color: 'var(--color-warning)',
+  },
+
+  '.cm-lintPoint[data-severity="info"]::after': {
+    color: '#5ea1ff', // blue for info
+  },
+
+  // Diagnostic underlines (squiggly lines)
+  '.cm-diagnostic': {
+    textDecoration: 'none',
+    position: 'relative',
+  },
+
+  '.cm-diagnostic-error': {
+    borderBottom: '2px wavy var(--color-error)',
+  },
+
+  '.cm-diagnostic-warning': {
+    borderBottom: '2px wavy var(--color-warning)',
+  },
+
+  '.cm-diagnostic-info': {
+    borderBottom: '2px wavy #5ea1ff',
+  },
+
+  // Lint tooltip styling
+  '.cm-tooltip-lint': {
+    backgroundColor: 'var(--color-background-secondary)',
+    border: '1px solid var(--color-border-muted)',
+    borderRadius: 'var(--border-radius-md)',
+    boxShadow: 'var(--shadow-glow)',
+    fontFamily: 'var(--font-mono)',
+    fontSize: '12px',
+    maxWidth: '400px',
+    padding: '8px 12px',
+    color: 'var(--color-text-primary)',
+    lineHeight: '1.4',
+  },
+
+  '.cm-tooltip-lint .cm-diagnostic-error': {
+    borderLeft: '3px solid var(--color-error)',
+    paddingLeft: '8px',
+    marginLeft: '4px',
+  },
+
+  '.cm-tooltip-lint .cm-diagnostic-warning': {
+    borderLeft: '3px solid var(--color-warning)',
+    paddingLeft: '8px',
+    marginLeft: '4px',
+  },
+
+  '.cm-tooltip-lint .cm-diagnostic-info': {
+    borderLeft: '3px solid #5ea1ff',
+    paddingLeft: '8px',
+    marginLeft: '4px',
+  },
+
+  // Lint panel styling (if using lint panel)
+  '.cm-panel.cm-lint-panel': {
+    backgroundColor: 'var(--color-background-secondary)',
+    border: '1px solid var(--color-border-muted)',
+    borderRadius: 'var(--border-radius-md)',
+    fontFamily: 'var(--font-mono)',
+    fontSize: '12px',
+  },
+
+  '.cm-lint-panel .cm-diagnostic': {
+    padding: '4px 8px',
+    borderBottom: '1px solid rgba(var(--color-border-muted-rgb), 0.3)',
+    cursor: 'pointer',
+  },
+
+  '.cm-lint-panel .cm-diagnostic:hover': {
+    backgroundColor: 'rgba(var(--color-glow-rgb), 0.1)',
+  },
+
+  '.cm-lint-panel .cm-diagnostic.cm-diagnostic-error': {
+    color: 'var(--color-error)',
+  },
+
+  '.cm-lint-panel .cm-diagnostic.cm-diagnostic-warning': {
+    color: 'var(--color-warning)',
+  },
+
+  '.cm-lint-panel .cm-diagnostic.cm-diagnostic-info': {
+    color: '#5ea1ff',
+  },
+
   // Autocompletion popup styling
   '.cm-tooltip-autocomplete': {
     backgroundColor: 'var(--color-background-secondary)',

@@ -11,6 +11,7 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
+  transition: all var(--transition-fast);
 }
 
 .dro-split-left {
@@ -19,6 +20,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transition: flex var(--transition-fast);
 }
 
 .dro-split-divider {
@@ -40,6 +42,44 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transition: flex var(--transition-fast);
+}
+
+/* Layout Variants */
+.dro-split-layout.normal-split .dro-split-left {
+  flex: 1;
+}
+
+.dro-split-layout.normal-split .dro-split-right {
+  flex: 1;
+}
+
+/* Bigger editor mode - applies to whichever panel contains the editor */
+.dro-split-layout.bigger-editor .dro-split-left {
+  flex: 1; /* Default size for non-editor panel */
+}
+
+.dro-split-layout.bigger-editor .dro-split-right {
+  flex: 1; /* Default size for non-editor panel */
+}
+
+/* When bigger-editor is enabled, the panel with editor-panel class gets 70% width */
+.dro-split-layout.bigger-editor .editor-panel {
+  flex: 2.33; /* 70% width for editor panel */
+}
+
+/* Ensure non-editor panel stays at 30% when bigger-editor is active */
+.dro-split-layout.bigger-editor .dro-split-left:not(.editor-panel) {
+  flex: 1; /* 30% width for non-editor panel */
+}
+
+.dro-split-layout.bigger-editor .dro-split-right:not(.editor-panel) {
+  flex: 1; /* 30% width for non-editor panel */
+}
+
+/* Flipped layout indication */
+.dro-split-layout.flipped {
+  /* Visual indication could be added here if needed */
 }
 
 /* Panel Styles */

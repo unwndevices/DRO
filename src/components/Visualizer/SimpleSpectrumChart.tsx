@@ -1,7 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { FaPlay, FaPause } from 'react-icons/fa';
+import { useSettings } from '../../contexts/SettingsContext';
+import type { SpectralFrame } from '../../services/DataModel/types';
 import './SimpleSpectrumChart.css';
-import type { SpectralFrame } from '../../services/DataModel/types.ts';
 
 interface SimpleSpectrumChartProps {
   frames: SpectralFrame[];
@@ -18,19 +19,33 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  
-  // Auto-play functionality
+  const { settings } = useSettings();
+
+  // Auto-play effect
   useEffect(() => {
     if (!isPlaying || frames.length === 0) return;
-    
+
     const interval = setInterval(() => {
       onFrameChange((currentFrame + 1) % frames.length);
-    }, 50); // 20 FPS playback
-    
+    }, 100); // 10 FPS
+
     return () => clearInterval(interval);
   }, [isPlaying, currentFrame, frames.length, onFrameChange]);
 
-  // Chart rendering effect
+  // Get current theme colors from CSS variables
+  const getThemeColors = () => {
+    const root = document.documentElement;
+    const computedStyle = getComputedStyle(root);
+    
+    return {
+      background: computedStyle.getPropertyValue('--color-background').trim() || '#181818',
+      primary: computedStyle.getPropertyValue('--color-amber').trim() || '#C7EE1B',
+      primaryMuted: computedStyle.getPropertyValue('--color-amber-dark').trim() || '#9EBE0E',
+      textMuted: computedStyle.getPropertyValue('--color-text-muted').trim() || '#999999',
+    };
+  };
+
+  // Chart rendering effect - includes theme dependencies for immediate updates
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -45,29 +60,32 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
 
-    // Clear canvas
-    ctx.fillStyle = '#181818';
+    // Get current theme colors
+    const colors = getThemeColors();
+
+    // Clear canvas with theme background
+    ctx.fillStyle = colors.background;
     ctx.fillRect(0, 0, rect.width, rect.height);
 
     // Draw spectrum bars
     if (frames.length > 0 && currentFrame < frames.length) {
       const frame = frames[currentFrame];
       if (frame && frame.bands) {
-        drawBarsChart(ctx, frame.bands, rect.width, rect.height);
+        drawBarsChart(ctx, frame.bands, rect.width, rect.height, colors);
       }
     }
 
     // Draw frequency labels and grid
-    drawFrequencyLabels(ctx, rect.width, rect.height);
+    drawFrequencyLabels(ctx, rect.width, rect.height, colors);
     
-  }, [frames, currentFrame]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [frames, currentFrame, settings.theme.accentColor, settings.theme.backgroundColor]); // Include theme dependencies for immediate updates
 
   const getFrequencyForBand = (band: number, totalBands: number = 20): number => {
     const freqRatio = band / (totalBands - 1);
     return 80 * Math.pow(8000 / 80, freqRatio); // Logarithmic scale: 80Hz to 8kHz
   };
 
-  const drawBarsChart = (ctx: CanvasRenderingContext2D, bands: number[], width: number, height: number) => {
+  const drawBarsChart = (ctx: CanvasRenderingContext2D, bands: number[], width: number, height: number, colors: any) => {
     if (!bands || bands.length === 0) return;
 
     // Add horizontal margins to prevent bars from touching edges
@@ -77,7 +95,7 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
     const maxHeight = height - 60; // Leave space for labels and controls
 
     // Draw grid lines
-    drawGrid(ctx, width, height);
+    drawGrid(ctx, width, height, colors);
 
     bands.forEach((value, index) => {
       const barHeight = value * maxHeight; // Values are already 0-1
@@ -85,23 +103,23 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
       const x = margin + (index * barWidth);
       const y = height - barHeight - 40;
 
-      // Draw bar with a solid color and increased gap
-      ctx.fillStyle = '#C7EE1B'; // --color-primary from the theme
+      // Draw bar with theme color
+      ctx.fillStyle = colors.primary;
       
       const gap = barWidth * 0.2; // 20% gap
       const drawnBarWidth = barWidth - gap;
       
       ctx.fillRect(x + (gap / 2), y, drawnBarWidth, barHeight);
 
-      // Add glow effect
-      ctx.shadowColor = '#C7EE1B';
+      // Add glow effect with theme color
+      ctx.shadowColor = colors.primary;
       ctx.shadowBlur = 4;
       ctx.fillRect(x + (gap / 2), y, drawnBarWidth, barHeight);
       ctx.shadowBlur = 0;
 
       // Draw band labels
       if (index % 2 === 0) { // Only every other label to avoid crowding
-        ctx.fillStyle = '#999999';
+        ctx.fillStyle = colors.textMuted;
         ctx.font = '9px Fira Mono';
         ctx.textAlign = 'center';
         ctx.fillText(
@@ -113,12 +131,12 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
     });
   };
 
-  const drawGrid = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+  const drawGrid = (ctx: CanvasRenderingContext2D, width: number, height: number, colors: any) => {
     // Add horizontal margins to match the bars
     const margin = 20;
     const drawableWidth = width - (2 * margin);
     
-    ctx.strokeStyle = '#9EBE0E35';
+    ctx.strokeStyle = colors.primaryMuted + '35'; // Add transparency
     ctx.lineWidth = 0.5;
 
     // Horizontal lines
@@ -143,12 +161,12 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
     }
   };
 
-  const drawFrequencyLabels = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+  const drawFrequencyLabels = (ctx: CanvasRenderingContext2D, width: number, height: number, colors: any) => {
     // Add horizontal margins to match the bars
     const margin = 20;
     const drawableWidth = width - (2 * margin);
     
-    ctx.fillStyle = '#999999';
+    ctx.fillStyle = colors.textMuted;
     ctx.font = '10px Fira Mono';
     ctx.textAlign = 'center';
 

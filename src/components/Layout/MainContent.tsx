@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSettings } from '../../contexts/SettingsContext';
 import './MainContent.css';
 
 interface MainContentProps {
@@ -38,14 +39,32 @@ interface SplitLayoutProps {
 }
 
 export const SplitLayout: React.FC<SplitLayoutProps> = ({ left, right }) => {
+  const { settings } = useSettings();
+  
+  // Determine which panel contains the editor based on flip state
+  // When flipped, the editor (left prop) is on the right side
+  // When not flipped, the editor (left prop) is on the left side
+  const editorOnLeft = !settings.layout.flipUI;
+  
+  // Determine layout classes based on settings
+  const layoutClasses = [
+    'dro-split-layout',
+    settings.layout.biggerEditor ? 'bigger-editor' : 'normal-split',
+    settings.layout.flipUI ? 'flipped' : ''
+  ].filter(Boolean).join(' ');
+
+  // Conditionally swap left and right based on flipUI setting
+  const leftPanel = settings.layout.flipUI ? right : left;
+  const rightPanel = settings.layout.flipUI ? left : right;
+
   return (
-    <div className="dro-split-layout">
-      <div className="dro-split-left">
-        {left}
+    <div className={layoutClasses}>
+      <div className={`dro-split-left ${settings.layout.biggerEditor && editorOnLeft ? 'editor-panel' : ''}`}>
+        {leftPanel}
       </div>
       <div className="dro-split-divider"></div>
-      <div className="dro-split-right">
-        {right}
+      <div className={`dro-split-right ${settings.layout.biggerEditor && !editorOnLeft ? 'editor-panel' : ''}`}>
+        {rightPanel}
       </div>
     </div>
   );
