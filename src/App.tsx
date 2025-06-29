@@ -5,7 +5,7 @@ import { CodeEditor } from './components/Editor/CodeEditor';
 import { SimpleSpectrumChart } from './components/Visualizer/SimpleSpectrumChart';
 import { SettingsModal } from './components/UI/SettingsModal';
 import { SettingsProvider, useSettings } from './contexts/SettingsContext';
-import type { Settings } from './types/settings';
+
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { luaService } from './services/LuaEngine/LuaService';
 import type { Datum } from './services/DataModel/types.ts';

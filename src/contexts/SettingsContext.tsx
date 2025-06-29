@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import type { Settings, SettingsContextType, defaultSettings } from '../types/settings';
+import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import type { Settings, SettingsContextType } from '../types/settings';
 import { defaultSettings as defaultSettingsValue } from '../types/settings';
 import { applyThemeColors } from '../utils/colorUtils';
 

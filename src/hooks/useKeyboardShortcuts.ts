@@ -18,7 +18,7 @@ export const useKeyboardShortcuts = (options: KeyboardShortcutsOptions) => {
                 target.contentEditable === 'true';
 
             // Check if we're in CodeMirror editor
-            const isInCodeMirror = target.closest('.cm-editor') !== null;
+            // const isInCodeMirror = target.closest('.cm-editor') !== null;
 
             // Ctrl+Return / Cmd+Return - Execute code (works globally and in editor)
             if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {

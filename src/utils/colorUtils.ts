@@ -134,7 +134,7 @@ export function applyThemeColors(accentColor: string, backgroundColor: string): 
     root.style.setProperty('--color-glow-rgb', accentVariants.rgb);
 
     // Apply RGB variants for accent colors
-    const [accentR, accentG, accentB] = hexToRgb(accentVariants.base);
+    // const [accentR, accentG, accentB] = hexToRgb(accentVariants.base);
     const [accentDarkR, accentDarkG, accentDarkB] = hexToRgb(accentVariants.dark);
     root.style.setProperty('--color-border-muted-rgb', `${accentDarkR}, ${accentDarkG}, ${accentDarkB}`);
 
