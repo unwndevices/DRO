@@ -1,130 +1,63 @@
-import React, { useRef, useCallback } from 'react';
+import React from 'react';
 import { useSettings } from '../../../contexts/SettingsContext';
+import type { ThemeName } from '../../../types/settings';
+
+const themeOptions: { value: ThemeName; label: string; description: string }[] = [
+  { value: 'gruvbox', label: 'Gruvbox', description: 'Retro groove with warm colors' },
+  { value: 'rose-pine', label: 'Rose Pine', description: 'All natural pine, faux fur and a bit of soho vibes' },
+  { value: 'catppuccin', label: 'Catppuccin', description: 'Soothing pastel theme for the high-spirited' },
+  { value: 'nord', label: 'Nord', description: 'Arctic, north-bluish color palette' },
+  { value: 'rose-pine-dawn', label: 'Rose Pine Dawn', description: 'Light variant of Rose Pine with warm dawn colors' },
+  { value: 'jellyfish', label: 'Jellyfish', description: 'Deep purple ocean vibes with glowing accents' },
+  { value: 'aura', label: 'Aura', description: 'Dark mystical theme with purple magic' },
+  { value: 'dobri', label: 'Dobri', description: 'Clean dark theme with vibrant green accents' },
+  { value: 'cute-pink-light', label: 'Cute Pink Light', description: 'Adorable light theme with soft pink tones' },
+];
 
 export const ThemeSettings: React.FC = () => {
   const { settings, updateSettings } = useSettings();
-  
-  // Use timeout refs to debounce color updates
-  const accentTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const backgroundTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const textTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Debounced accent color handler - only updates after user stops changing color
-  const handleAccentColorChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newColor = e.target.value;
-    
-    // Clear existing timeout
-    if (accentTimeoutRef.current) {
-      clearTimeout(accentTimeoutRef.current);
-    }
-    
-    // Set new timeout - only update after 300ms of no changes
-    accentTimeoutRef.current = setTimeout(() => {
-      updateSettings({
-        theme: {
-          ...settings.theme,
-          accentColor: newColor
-        }
-      });
-    }, 300);
-  }, [settings.theme, updateSettings]);
-
-  // Debounced background color handler - only updates after user stops changing color  
-  const handleBackgroundColorChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newColor = e.target.value;
-    
-    // Clear existing timeout
-    if (backgroundTimeoutRef.current) {
-      clearTimeout(backgroundTimeoutRef.current);
-    }
-    
-    // Set new timeout - only update after 300ms of no changes
-    backgroundTimeoutRef.current = setTimeout(() => {
-      updateSettings({
-        theme: {
-          ...settings.theme,
-          backgroundColor: newColor
-        }
-      });
-    }, 300);
-  }, [settings.theme, updateSettings]);
-
-  // Debounced text color handler - only updates after user stops changing color
-  const handleTextColorChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const newColor = e.target.value;
-    
-    // Clear existing timeout
-    if (textTimeoutRef.current) {
-      clearTimeout(textTimeoutRef.current);
-    }
-    
-    // Set new timeout - only update after 300ms of no changes
-    textTimeoutRef.current = setTimeout(() => {
-      updateSettings({
-        theme: {
-          ...settings.theme,
-          textColor: newColor
-        }
-      });
-    }, 300);
-  }, [settings.theme, updateSettings]);
+  const handleThemeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newTheme = e.target.value as ThemeName;
+    updateSettings({
+      theme: {
+        name: newTheme
+      }
+    });
+  };
 
   return (
     <div className="theme-settings">
       <div className="settings-control">
         <div className="settings-control-label">
-          <div className="settings-control-title">Accent Color</div>
+          <div className="settings-control-title">Theme</div>
           <div className="settings-control-description">
-            Primary interface color - lighter and darker variants will be generated automatically
+            Choose from carefully crafted color schemes
           </div>
         </div>
         <div className="settings-control-input">
-          <input
-            type="color"
-            value={settings.theme.accentColor}
-            onChange={handleAccentColorChange}
-            className="settings-color-input"
-            title="Select accent color"
-            aria-label="Accent color picker"
-          />
+          <select
+            value={settings.theme.name}
+            onChange={handleThemeChange}
+            className="input select"
+            title="Select theme"
+            aria-label="Theme selector"
+          >
+            {themeOptions.map((theme) => (
+              <option key={theme.value} value={theme.value}>
+                {theme.label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
-
-      <div className="settings-control">
+      
+      <div className="theme-preview">
         <div className="settings-control-label">
-          <div className="settings-control-title">Background Color</div>
+          <div className="settings-control-title">Preview</div>
           <div className="settings-control-description">
-            Base background color - secondary and tertiary variants will be generated automatically
+            {themeOptions.find(t => t.value === settings.theme.name)?.description}
           </div>
-        </div>
-        <div className="settings-control-input">
-          <input
-            type="color"
-            value={settings.theme.backgroundColor}
-            onChange={handleBackgroundColorChange}
-            className="settings-color-input"
-            title="Select background color"
-            aria-label="Background color picker"
-          />
-        </div>
-      </div>
-
-      <div className="settings-control">
-        <div className="settings-control-label">
-          <div className="settings-control-title">Text Color</div>
-          <div className="settings-control-description">
-            Primary text color - used for most interface text elements
-          </div>
-        </div>
-        <div className="settings-control-input">
-          <input
-            type="color"
-            value={settings.theme.textColor}
-            onChange={handleTextColorChange}
-            className="settings-color-input"
-            title="Select text color"
-            aria-label="Text color picker"
-          />
         </div>
       </div>
     </div>

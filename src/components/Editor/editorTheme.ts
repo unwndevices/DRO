@@ -11,7 +11,7 @@ export const amberTheme = EditorView.theme({
   },
 
   '.cm-content': {
-    caretColor: 'var(--color-amber)',
+    caretColor: 'var(--color-accent)',
     backgroundColor: 'var(--color-background)',
     padding: 'var(--spacing-md)',
   },
@@ -29,7 +29,7 @@ export const amberTheme = EditorView.theme({
   },
 
   '.cm-cursor, .cm-dropCursor': { 
-    borderLeftColor: 'var(--color-amber)' 
+    borderLeftColor: 'var(--color-accent)' 
   },
   
   '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': { 
@@ -46,7 +46,7 @@ export const amberTheme = EditorView.theme({
 
   '&.cm-focused .cm-matchingBracket, &.cm-focused .cm-tag-matching': {
     backgroundColor: 'rgba(var(--color-glow-rgb), 0.2)',
-    outline: '1px solid var(--color-amber)'
+    outline: '1px solid var(--color-accent)'
   },
 
   '.cm-gutters': {
@@ -85,7 +85,7 @@ export const amberTheme = EditorView.theme({
   },
 
   '.cm-foldGutter .cm-gutterElement:hover': {
-    color: 'var(--color-amber)',
+    color: 'var(--color-accent)',
     backgroundColor: 'rgba(var(--color-glow-rgb), 0.1)',
   },
 
@@ -210,7 +210,7 @@ export const amberTheme = EditorView.theme({
   // Autocompletion popup styling
   '.cm-tooltip-autocomplete': {
     backgroundColor: 'var(--color-background-secondary)',
-    border: '1px solid var(--color-amber)',
+    border: '1px solid var(--color-accent)',
     borderRadius: 'var(--border-radius-md)',
     boxShadow: 'var(--shadow-glow)',
     fontFamily: 'var(--font-mono)',
@@ -242,7 +242,7 @@ export const amberTheme = EditorView.theme({
 
   '.cm-tooltip-autocomplete > ul > li:hover, .cm-tooltip-autocomplete > ul > li[aria-selected]': {
     backgroundColor: 'rgba(var(--color-glow-rgb), 0.15)',
-    color: 'var(--color-amber)',
+    color: 'var(--color-accent)',
   },
 
   '.cm-completionLabel': {
@@ -306,7 +306,7 @@ export const amberTheme = EditorView.theme({
   // Search match highlighting
   '.cm-searchMatch': {
     backgroundColor: 'rgba(var(--color-glow-rgb), 0.3)',
-    outline: '1px solid var(--color-amber)',
+    outline: '1px solid var(--color-accent)',
   },
 
   '.cm-searchMatch.cm-searchMatch-selected': {
@@ -335,13 +335,13 @@ export const amberTheme = EditorView.theme({
   },
 
   '.cm-panel input:focus': {
-    borderColor: 'var(--color-amber)',
+    borderColor: 'var(--color-accent)',
     outline: 'none',
     boxShadow: '0 0 0 2px rgba(var(--color-glow-rgb), 0.2)',
   },
 
   '.cm-panel button': {
-    backgroundColor: 'var(--color-amber)',
+    backgroundColor: 'var(--color-accent)',
     color: 'var(--color-background)',
     border: 'none',
     borderRadius: 'var(--border-radius-sm)',
@@ -353,38 +353,207 @@ export const amberTheme = EditorView.theme({
   },
 
   '.cm-panel button:hover': {
-    backgroundColor: 'var(--color-amber-light)',
+    backgroundColor: 'var(--color-accent-light)',
   },
 
 }, { dark: true });
 
 
-// Create the base highlighter using cyberdream.nvim color palette
-const baseHighlighter = HighlightStyle.define([
-  { tag: t.keyword, color: '#bd5eff' }, // purple
-  { tag: [t.name, t.variableName], color: '#5ea1ff' }, // blue
-  { tag: t.function(t.variableName), color: '#5eff6c' }, // green for functions
-  { tag: t.string, color: '#f1ff5e' }, // yellow
-  { tag: t.number, color: '#5ef1ff' }, // cyan
-  { tag: t.bool, color: '#ff5ea0' }, // pink
-  { tag: t.comment, color: '#7b8496', fontStyle: 'italic' }, // grey
-  { tag: t.operator, color: '#ff5555' }, // red
-  { tag: t.punctuation, color: '#ffffff' }, // white
-  { tag: t.propertyName, color: '#ffbd5e' }, // orange
-  { tag: t.className, color: '#ff5ef1' }, // magenta
-  { tag: t.invalid, color: 'var(--color-error)' },
-]);
+import { getTheme } from '../../styles/theme';
+import type { ThemeName } from '../../types/settings';
 
-// Apply workaround for "tags is not iterable" error with legacy modes
-const originalStyle = baseHighlighter.style;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(baseHighlighter as { style: (tags: any) => any }).style = function(tags: any) {
-  return originalStyle.call(this, tags || []);
+// Create theme-aware syntax highlighting
+export const createSyntaxHighlighting = (themeName: ThemeName) => {
+  const theme = getTheme(themeName);
+  
+  // Define syntax colors based on the theme
+  let syntaxColors;
+  
+  switch (themeName) {
+    case 'gruvbox':
+      syntaxColors = {
+        keyword: '#fb4934',     // red
+        variable: '#83a598',    // blue
+        function: '#b8bb26',    // green
+        string: '#fabd2f',      // yellow
+        number: '#d3869b',      // purple
+        bool: '#fe8019',        // orange
+        comment: '#928374',     // gray
+        operator: '#fb4934',    // red
+        punctuation: theme.colors.textSecondary,
+        property: '#8ec07c',    // aqua
+        className: '#d3869b',   // purple
+      };
+      break;
+    case 'rose-pine':
+      syntaxColors = {
+        keyword: '#eb6f92',     // love
+        variable: '#9ccfd8',    // foam
+        function: '#f6c177',    // gold
+        string: '#ebbcba',      // rose
+        number: '#c4a7e7',      // iris
+        bool: '#eb6f92',        // love
+        comment: '#6e6a86',     // muted
+        operator: '#eb6f92',    // love
+        punctuation: theme.colors.textSecondary,
+        property: '#9ccfd8',    // foam
+        className: '#c4a7e7',   // iris
+      };
+      break;
+    case 'catppuccin':
+      syntaxColors = {
+        keyword: '#cba6f7',     // mauve
+        variable: '#89b4fa',    // blue
+        function: '#a6e3a1',    // green
+        string: '#f9e2af',      // yellow
+        number: '#fab387',      // peach
+        bool: '#f5c2e7',        // pink
+        comment: '#6c7086',     // overlay1
+        operator: '#f38ba8',    // red
+        punctuation: theme.colors.textSecondary,
+        property: '#94e2d5',    // teal
+        className: '#cba6f7',   // mauve
+      };
+      break;
+    case 'nord':
+      syntaxColors = {
+        keyword: '#81a1c1',     // nord9
+        variable: '#8fbcbb',    // nord7
+        function: '#88c0d0',    // nord8
+        string: '#a3be8c',      // nord14
+        number: '#b48ead',      // nord15
+        bool: '#d08770',        // nord12
+        comment: '#616e88',     // nord3
+        operator: '#bf616a',    // nord11
+        punctuation: theme.colors.textSecondary,
+        property: '#8fbcbb',    // nord7
+        className: '#b48ead',   // nord15
+      };
+      break;
+    case 'rose-pine-dawn':
+      syntaxColors = {
+        keyword: '#b4637a',     // love
+        variable: '#56949f',    // foam
+        function: '#ea9d34',    // gold
+        string: '#d7827e',      // rose
+        number: '#907aa9',      // iris
+        bool: '#b4637a',        // love
+        comment: '#9893a5',     // muted
+        operator: '#b4637a',    // love
+        punctuation: theme.colors.textSecondary,
+        property: '#56949f',    // foam
+        className: '#907aa9',   // iris
+      };
+      break;
+    case 'jellyfish':
+      syntaxColors = {
+        keyword: '#ff79c6',     // pink
+        variable: '#8be9fd',    // cyan
+        function: '#50fa7b',    // green
+        string: '#f1fa8c',      // yellow
+        number: '#bd93f9',      // purple
+        bool: '#ff79c6',        // pink
+        comment: '#6272a4',     // comment
+        operator: '#ff5555',    // red
+        punctuation: theme.colors.textSecondary,
+        property: '#ffb86c',    // orange
+        className: '#bd93f9',   // purple
+      };
+      break;
+    case 'aura':
+      syntaxColors = {
+        keyword: '#a277ff',     // purple
+        variable: '#61ffca',    // mint
+        function: '#ffca85',    // orange
+        string: '#a277ff',      // purple
+        number: '#ff6767',      // red
+        bool: '#a277ff',        // purple
+        comment: '#6d6d6d',     // gray
+        operator: '#ff6767',    // red
+        punctuation: theme.colors.textSecondary,
+        property: '#61ffca',    // mint
+        className: '#a277ff',   // purple
+      };
+      break;
+    case 'dobri':
+      syntaxColors = {
+        keyword: '#0dbc79',     // green
+        variable: '#12d98a',    // light green
+        function: '#0dbc79',    // green
+        string: '#f39c12',      // orange
+        number: '#e74c3c',      // red
+        bool: '#0dbc79',        // green
+        comment: '#606060',     // gray
+        operator: '#e74c3c',    // red
+        punctuation: theme.colors.textSecondary,
+        property: '#12d98a',    // light green
+        className: '#0dbc79',   // green
+      };
+      break;
+    case 'cute-pink-light':
+      syntaxColors = {
+        keyword: '#e91e7a',     // dark pink
+        variable: '#8b5cf6',    // purple
+        function: '#22c55e',    // green
+        string: '#f59e0b',      // amber
+        number: '#ef4444',      // red
+        bool: '#e91e7a',        // dark pink
+        comment: '#8d7c8e',     // muted
+        operator: '#ef4444',    // red
+        punctuation: theme.colors.textSecondary,
+        property: '#8b5cf6',    // purple
+        className: '#e91e7a',   // dark pink
+      };
+      break;
+    default:
+      syntaxColors = {
+        keyword: theme.colors.accent,
+        variable: theme.colors.textPrimary,
+        function: theme.colors.success,
+        string: theme.colors.warning,
+        number: theme.colors.accent,
+        bool: theme.colors.accent,
+        comment: theme.colors.textMuted,
+        operator: theme.colors.error,
+        punctuation: theme.colors.textSecondary,
+        property: theme.colors.accent,
+        className: theme.colors.accent,
+      };
+  }
+  
+  const highlighter = HighlightStyle.define([
+    { tag: t.keyword, color: syntaxColors.keyword },
+    { tag: [t.name, t.variableName], color: syntaxColors.variable },
+    { tag: t.function(t.variableName), color: syntaxColors.function },
+    { tag: t.string, color: syntaxColors.string },
+    { tag: t.number, color: syntaxColors.number },
+    { tag: t.bool, color: syntaxColors.bool },
+    { tag: t.comment, color: syntaxColors.comment, fontStyle: 'italic' },
+    { tag: t.operator, color: syntaxColors.operator },
+    { tag: t.punctuation, color: syntaxColors.punctuation },
+    { tag: t.propertyName, color: syntaxColors.property },
+    { tag: t.className, color: syntaxColors.className },
+    { tag: t.invalid, color: 'var(--color-error)' },
+  ]);
+
+  // Apply workaround for "tags is not iterable" error with legacy modes
+  const originalStyle = highlighter.style;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (highlighter as { style: (tags: any) => any }).style = function(tags: any) {
+    return originalStyle.call(this, tags || []);
+  };
+
+  return syntaxHighlighting(highlighter);
 };
 
-export const amberSyntaxHighlighting = syntaxHighlighting(baseHighlighter);
+// Default syntax highlighting (for backward compatibility)
+export const amberSyntaxHighlighting = createSyntaxHighlighting('gruvbox');
 
-export const amberEditorTheme = [
+// Create complete theme-aware editor theme
+export const createEditorTheme = (themeName: ThemeName) => [
   amberTheme,
-  amberSyntaxHighlighting
-]; 
+  createSyntaxHighlighting(themeName)
+];
+
+// Default editor theme (for backward compatibility)
+export const amberEditorTheme = createEditorTheme('gruvbox'); 

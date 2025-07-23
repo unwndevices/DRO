@@ -269,7 +269,7 @@ export const DaisyFlasher: React.FC = () => {
         throw new Error('No firmware data available');
       }
 
-      console.log(`Flashing ${firmwareData.byteLength} bytes`);
+      console.log(`Flashing ${firmwareName}: ${firmwareData.byteLength} bytes`);
 
       // Clear any error status
       try {

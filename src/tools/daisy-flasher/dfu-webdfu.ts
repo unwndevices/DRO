@@ -30,7 +30,6 @@ export const DFU_STATUS = {
 };
 
 // DfuSe specific commands
-const DFUSE_GET_COMMANDS = 0x00;
 const DFUSE_SET_ADDRESS = 0x21;
 const DFUSE_ERASE_SECTOR = 0x41;
 
@@ -320,7 +319,7 @@ export class DFUDevice {
 
   private getSectorStart(addr: number, segment?: MemorySegment): number {
     if (!segment) {
-      segment = this.getSegment(addr);
+      segment = this.getSegment(addr) || undefined;
     }
 
     if (!segment) {
@@ -333,7 +332,7 @@ export class DFUDevice {
 
   private getSectorEnd(addr: number, segment?: MemorySegment): number {
     if (!segment) {
-      segment = this.getSegment(addr);
+      segment = this.getSegment(addr) || undefined;
     }
 
     if (!segment) {
@@ -346,7 +345,7 @@ export class DFUDevice {
 
   private async erase(startAddr: number, length: number): Promise<void> {
     let segment = this.getSegment(startAddr);
-    let addr = this.getSectorStart(startAddr, segment);
+    let addr = this.getSectorStart(startAddr, segment || undefined);
     const endAddr = this.getSectorEnd(startAddr + length - 1);
 
     let bytesErased = 0;
@@ -378,7 +377,7 @@ export class DFUDevice {
     }
   }
 
-  async do_download(xfer_size: number, data: ArrayBuffer, manifestationTolerant: boolean = true, eraseFirst: boolean = false): Promise<void> {
+  async do_download(xfer_size: number, data: ArrayBuffer, _manifestationTolerant: boolean = true, eraseFirst: boolean = false): Promise<void> {
     this.logInfo?.("Starting firmware download");
 
     const expected_size = data.byteLength;
@@ -466,7 +465,7 @@ export function findDfuInterfaces(device: USBDevice): DFUInterface[] {
             configuration: config,
             interface: iface,
             alternate: alt,
-            name: alt.interfaceName
+            name: alt.interfaceName || null
           });
         }
       }

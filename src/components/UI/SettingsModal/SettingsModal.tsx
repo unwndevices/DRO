@@ -48,14 +48,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
   };
 
   return (
-    <div className="settings-modal-backdrop" onClick={handleBackdropClick}>
-      <div className="settings-modal" role="dialog" aria-labelledby="settings-title" aria-modal="true">
-        <div className="settings-modal-header">
-          <h2 id="settings-title" className="settings-modal-title">
+    <div className="modal-backdrop" onClick={handleBackdropClick}>
+      <div className="modal settings-modal" role="dialog" aria-labelledby="settings-title" aria-modal="true">
+        <div className="modal-header">
+          <h2 id="settings-title" className="modal-title">
             DRO SETTINGS
           </h2>
           <button 
-            className="settings-modal-close" 
+            className="settings-modal-close btn btn-ghost" 
             onClick={onClose}
             aria-label="Close settings"
             title="Close Settings (Esc)"
@@ -64,7 +64,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           </button>
         </div>
 
-        <div className="settings-modal-content">
+        <div className="modal-content">
           <div className="settings-section">
             <h3 className="settings-section-title">LAYOUT</h3>
             <LayoutSettings />
@@ -76,16 +76,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           </div>
         </div>
 
-        <div className="settings-modal-footer">
+        <div className="modal-footer">
           <button 
-            className="settings-button settings-button-secondary btn-secondary" 
+            className="btn btn-secondary settings-button-secondary" 
             onClick={handleReset}
             title="Reset all settings to defaults"
           >
             RESET DEFAULTS
           </button>
           <button 
-            className="settings-button settings-button-primary btn-primary" 
+            className="btn btn-primary" 
             onClick={onClose}
             title="Close settings dialog"
           >

@@ -207,7 +207,7 @@ export class DFUDevice {
       await this.controlTransfer('out', DFU.DNLOAD, blockNum, 6, chunk);
       
       // Wait for transfer to complete
-      let status;
+      let status: { status: number; state: number; pollTimeout: number };
       let pollCount = 0;
       do {
         await new Promise(resolve => setTimeout(resolve, status?.pollTimeout || 50));
@@ -264,7 +264,7 @@ export function findDfuInterfaces(device: USBDevice): DFUInterface[] {
             configuration: config,
             interface: iface,
             alternate: alt,
-            name: alt.interfaceName
+            name: alt.interfaceName || null
           });
         }
       }

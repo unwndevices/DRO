@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { Settings, SettingsContextType } from '../types/settings';
 import { defaultSettings as defaultSettingsValue } from '../types/settings';
-import { applyThemeColors } from '../utils/colorUtils';
+import { applyTheme } from '../utils/colorUtils';
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
@@ -28,15 +28,15 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
         setSettings(mergedSettings);
         
         // Apply theme immediately after loading from localStorage
-        applyThemeColors(mergedSettings.theme.accentColor, mergedSettings.theme.backgroundColor, mergedSettings.theme.textColor);
+        applyTheme(mergedSettings.theme.name);
       } else {
         // Apply default theme if no saved settings
-        applyThemeColors(defaultSettingsValue.theme.accentColor, defaultSettingsValue.theme.backgroundColor, defaultSettingsValue.theme.textColor);
+        applyTheme(defaultSettingsValue.theme.name);
       }
     } catch (error) {
       console.warn('DRO: Failed to load settings from localStorage:', error);
       // Apply default theme on error
-      applyThemeColors(defaultSettingsValue.theme.accentColor, defaultSettingsValue.theme.backgroundColor, defaultSettingsValue.theme.textColor);
+      applyTheme(defaultSettingsValue.theme.name);
     }
   }, []);
 
@@ -52,11 +52,7 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
     
     // Apply theme immediately when theme settings change
     if (newSettings.theme) {
-      applyThemeColors(
-        updatedSettings.theme.accentColor, 
-        updatedSettings.theme.backgroundColor,
-        updatedSettings.theme.textColor
-      );
+      applyTheme(updatedSettings.theme.name);
     }
     
     // Save to localStorage
@@ -78,7 +74,7 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
     }
     
     // Apply default theme
-    applyThemeColors(defaultSettingsValue.theme.accentColor, defaultSettingsValue.theme.backgroundColor, defaultSettingsValue.theme.textColor);
+    applyTheme(defaultSettingsValue.theme.name);
   };
 
   const contextValue: SettingsContextType = {

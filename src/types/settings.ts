@@ -3,10 +3,10 @@ export interface LayoutSettings {
     biggerEditor: boolean;
 }
 
+export type ThemeName = 'rose-pine' | 'catppuccin' | 'gruvbox' | 'nord' | 'rose-pine-dawn' | 'jellyfish' | 'aura' | 'dobri' | 'cute-pink-light';
+
 export interface ThemeSettings {
-    accentColor: string;
-    backgroundColor: string;
-    textColor: string;
+    name: ThemeName;
 }
 
 export interface Settings {
@@ -26,8 +26,6 @@ export const defaultSettings: Settings = {
         biggerEditor: false,
     },
     theme: {
-        accentColor: '#C7EE1B', // Current amber color
-        backgroundColor: '#181818', // Current background
-        textColor: 'rgba(255, 255, 255, 0.1)', // Default to 0.1 gray
+        name: 'gruvbox',
     }
 }; 

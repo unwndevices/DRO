@@ -9,7 +9,8 @@ import { foldGutter, codeFolding } from '@codemirror/language';
 import { lineNumbers, highlightActiveLineGutter } from '@codemirror/view';
 import { linter, lintGutter, type Diagnostic } from '@codemirror/lint';
 import type { Text } from '@codemirror/state';
-import { amberEditorTheme } from './editorTheme';
+import { createEditorTheme } from './editorTheme';
+import { useSettings } from '../../contexts/SettingsContext';
 import './CodeEditor.css';
 
 interface CodeEditorProps {
@@ -473,6 +474,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   frameCount,
   onFrameCountChange,
 }) => {
+  const { settings } = useSettings();
   const [lastExecutionTime, setLastExecutionTime] = useState<number | null>(null);
 
   const handleExecute = useCallback(() => {
@@ -518,7 +520,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
             }),
             runKeymap,
             keymap.of(completionKeymap),
-            ...amberEditorTheme,
+            ...createEditorTheme(settings.theme.name),
           ]}
           onChange={onEditorChange}
           className="dro-codemirror-instance"

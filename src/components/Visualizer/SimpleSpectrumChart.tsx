@@ -39,8 +39,8 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
     
     return {
       background: computedStyle.getPropertyValue('--color-background').trim() || '#181818',
-      primary: computedStyle.getPropertyValue('--color-amber').trim() || '#C7EE1B',
-      primaryMuted: computedStyle.getPropertyValue('--color-amber-dark').trim() || '#9EBE0E',
+      primary: computedStyle.getPropertyValue('--color-accent').trim() || '#C7EE1B',
+      primaryMuted: computedStyle.getPropertyValue('--color-accent-dark').trim() || '#9EBE0E',
       textMuted: computedStyle.getPropertyValue('--color-text-muted').trim() || '#999999',
     };
   };
@@ -78,7 +78,7 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
     // Draw frequency labels and grid
     drawFrequencyLabels(ctx, rect.width, rect.height, colors);
     
-  }, [frames, currentFrame, settings.theme.accentColor, settings.theme.backgroundColor]); // Include theme dependencies for immediate updates
+  }, [frames, currentFrame, settings.theme.name]); // Include theme dependencies for immediate updates
 
   const getFrequencyForBand = (band: number, totalBands: number = 20): number => {
     const freqRatio = band / (totalBands - 1);
