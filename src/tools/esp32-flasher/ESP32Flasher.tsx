@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { MainContent, SplitLayout, Panel } from '../../components/Layout/MainContent';
 import { FirmwareSelector } from '../../components/FirmwareSelector';
+import { ESPLoader, Transport } from 'esptool-js';
 
 interface SerialMessage {
   timestamp: Date;
@@ -22,6 +23,7 @@ export const ESP32Flasher: React.FC = () => {
   const [serialMessages, setSerialMessages] = useState<SerialMessage[]>([]);
   const [serialInput, setSerialInput] = useState('');
   const [baudRate, setBaudRate] = useState(115200);
+  const serialBufferRef = useRef<string>('');
 
   // Firmware handling
   const [firmwareFile, setFirmwareFile] = useState<File | null>(null);
@@ -31,6 +33,8 @@ export const ESP32Flasher: React.FC = () => {
 
   // Refs
   const portRef = useRef<SerialPort | null>(null);
+  const transportRef = useRef<Transport | null>(null);
+  const espLoaderRef = useRef<ESPLoader | null>(null);
   const readerRef = useRef<ReadableStreamDefaultReader | null>(null);
   const writerRef = useRef<WritableStreamDefaultWriter | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -63,29 +67,54 @@ export const ESP32Flasher: React.FC = () => {
     }
 
     try {
+      // Request port but don't open it yet - let Transport handle the opening
       const port = await (navigator as any).serial.requestPort();
-      await port.open({
-        baudRate: 115200,
-        dataBits: 8,
-        stopBits: 1,
-        parity: 'none',
-        flowControl: 'none'
-      });
-
-      setIsConnected(true);
-      setFlashStatus('Connected successfully. Ready to flash.');
-
-      // Try to get device info
-      try {
-        // Simple chip detection - in a real implementation, you'd use esptool-js
-        setDeviceInfo('ESP32-S3 detected');
-      } catch (error) {
-        setDeviceInfo('Device connected (chip detection failed)');
-      }
-
+      
+      // Create transport (it will handle the connection internally)
+      const transport = new Transport(port);
+      
+      // Store references immediately
       portRef.current = port;
+      transportRef.current = transport;
+      setIsConnected(true);
+      setFlashStatus('Connected successfully. Detecting chip...');
+
+      // Try to get device info using esptool-js
+      try {
+        const esploader = new ESPLoader({
+          transport: transport,
+          baudrate: 115200,
+          romBaudrate: 115200
+        });
+
+        const chip = await esploader.main();
+        setDeviceInfo(`${chip} detected`);
+        setFlashStatus('Device detected successfully. Ready to flash.');
+        
+        // Store the ESPLoader instance for reuse
+        espLoaderRef.current = esploader;
+        
+        // Reset the chip to get back to normal state
+        await esploader.after('hard_reset');
+      } catch (error) {
+        console.warn('Chip detection failed:', error);
+        setDeviceInfo('ESP32 device connected (detection failed)');
+        setFlashStatus('Connected successfully. Ready to flash.');
+        
+        // Create a basic ESPLoader instance for flashing even if detection failed
+        const esploader = new ESPLoader({
+          transport: transport,
+          baudrate: 115200,
+          romBaudrate: 115200
+        });
+        espLoaderRef.current = esploader;
+      }
     } catch (error) {
       setFlashStatus(`Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setIsConnected(false);
+      portRef.current = null;
+      transportRef.current = null;
+      espLoaderRef.current = null;
     }
   }, []);
 
@@ -97,18 +126,27 @@ export const ESP32Flasher: React.FC = () => {
     }
 
     try {
-      const port = await (navigator as any).serial.requestPort();
-      await port.open({
-        baudRate: baudRate,
-        dataBits: 8,
-        stopBits: 1,
-        parity: 'none',
-        flowControl: 'none'
-      });
+      let port: SerialPort;
+      
+      // If we already have a connected port from flashing, reuse it
+      if (portRef.current && isConnected) {
+        port = portRef.current;
+        addSerialMessage('out', `Reusing existing connection at ${baudRate} baud`, 'info');
+      } else {
+        // Request new port and open it
+        port = await (navigator as any).serial.requestPort();
+        await port.open({
+          baudRate: baudRate,
+          dataBits: 8,
+          stopBits: 1,
+          parity: 'none',
+          flowControl: 'none'
+        });
+        portRef.current = port;
+        addSerialMessage('out', `Connected at ${baudRate} baud`, 'info');
+      }
 
-      portRef.current = port;
       setSerialConnected(true);
-      addSerialMessage('out', `Connected at ${baudRate} baud`, 'info');
 
       // Start reading
       const reader = port.readable.getReader();
@@ -120,13 +158,26 @@ export const ESP32Flasher: React.FC = () => {
       // Read loop
       const readLoop = async () => {
         try {
-          while (serialConnected && reader) {
+          while (true) {
             const { value, done } = await reader.read();
             if (done) break;
 
             const decoder = new TextDecoder();
             const text = decoder.decode(value);
-            addSerialMessage('in', text);
+            
+            // Add to buffer
+            serialBufferRef.current += text;
+            
+            // Process complete lines
+            const lines = serialBufferRef.current.split(/\r?\n/);
+            serialBufferRef.current = lines.pop() || ''; // Keep incomplete line in buffer
+            
+            // Display each complete line
+            for (const line of lines) {
+              if (line.trim()) {
+                addSerialMessage('in', line);
+              }
+            }
           }
         } catch (error) {
           if (error instanceof Error && error.name !== 'NetworkError') {
@@ -172,7 +223,7 @@ export const ESP32Flasher: React.FC = () => {
 
     try {
       const encoder = new TextEncoder();
-      const data = encoder.encode(serialInput + '\n');
+      const data = encoder.encode(serialInput + '\r\n');
       await writerRef.current.write(data);
       addSerialMessage('out', serialInput);
       setSerialInput('');
@@ -201,7 +252,7 @@ export const ESP32Flasher: React.FC = () => {
 
   // Flash firmware
   const flashFirmware = useCallback(async () => {
-    if (!isConnected) {
+    if (!isConnected || !espLoaderRef.current) {
       setFlashStatus('Please connect to device first.');
       return;
     }
@@ -217,31 +268,110 @@ export const ESP32Flasher: React.FC = () => {
     setFlashStatus('Starting ESP32 flash process...');
 
     try {
-      // In a real implementation, you'd use esptool-js here
-      // This simulates flashing a single binary at 0x0
+      // Get the firmware data
+      let firmwareData: ArrayBuffer;
       const firmwareName = firmwareSource === 'file' 
         ? firmwareFile!.name 
         : `firmware ${firmwareVersion}`;
-      setFlashStatus(`Flashing ${firmwareName} at 0x0...`);
 
-      // Simulate erasing and flashing progress
-      const steps = [
-        { progress: 10, message: 'Erasing flash...' },
-        { progress: 20, message: 'Writing firmware...' },
-        { progress: 90, message: 'Verifying...' },
-        { progress: 100, message: 'Flash completed successfully!' }
-      ];
-
-      for (const step of steps) {
-        setFlashProgress(step.progress);
-        setFlashStatus(step.message);
-        await new Promise(resolve => setTimeout(resolve, 800));
+      if (firmwareSource === 'file' && firmwareFile) {
+        firmwareData = await firmwareFile.arrayBuffer();
+      } else if (firmwareBlob) {
+        firmwareData = await firmwareBlob.arrayBuffer();
+      } else {
+        throw new Error('No firmware data available');
       }
 
+      setFlashStatus('Preparing ESP32 for flashing...');
+      setFlashProgress(5);
+
+      // Disconnect the old transport cleanly
+      setFlashStatus('Preparing connection for flashing...');
+      if (transportRef.current) {
+        try {
+          await transportRef.current.disconnect();
+        } catch (e) {
+          console.warn('Transport disconnect warning:', e);
+        }
+      }
+
+      // Create a fresh transport and loader for flashing  
+      const port = portRef.current!;
+      const transport = new Transport(port);
+      const esploader = new ESPLoader({
+        transport: transport,
+        baudrate: 115200,
+        romBaudrate: 115200
+      });
+
+      // Connect and sync with the chip for flashing
+      setFlashStatus('Connecting to chip for flashing...');
+      await esploader.main();
+      setFlashProgress(15);
+      
+      // Update references
+      transportRef.current = transport;
+      
+      // Change baud rate for faster flashing
+      setFlashStatus('Changing baudrate for faster flashing...');
+      await esploader.changeBaud();
+      setFlashProgress(25);
+
+      // Flash the firmware using writeFlash
+      setFlashStatus(`Flashing ${firmwareName} (${(firmwareData.byteLength / 1024).toFixed(1)} KB)...`);
+      
+      // Convert ArrayBuffer to string for esptool-js
+      const uint8Array = new Uint8Array(firmwareData);
+      let dataString = '';
+      for (let i = 0; i < uint8Array.length; i++) {
+        dataString += String.fromCharCode(uint8Array[i]);
+      }
+
+      // For simplicity and compatibility with other flashers, always flash at 0x0
+      // This matches the behavior of most ESP32 web flashers
+      const flashAddress = 0x0;
+
+      const fileArray = [{
+        data: dataString,
+        address: flashAddress
+      }];
+
+      setFlashStatus(`Flashing ${firmwareName} at 0x${flashAddress.toString(16).toUpperCase()}...`);
+
+      // For ESP32-S3, we know it has 8MB flash from the detection logs
+      // Let's be explicit about this to match what esptool detected
+      const detectedFlashSize = '8MB';
+      setFlashStatus(`Using ${detectedFlashSize} flash size, starting write...`);
+
+      await esploader.writeFlash({
+        fileArray: fileArray,
+        flashSize: detectedFlashSize,
+        flashMode: 'dio',
+        flashFreq: '40m',  // More conservative frequency
+        eraseAll: true,    // Erase all flash before writing - matches other flashers
+        compress: true,
+        // Progress callback
+        reportProgress: (_fileIndex, written, total) => {
+          const progress = 25 + (written / total) * 65; // 25% to 90%
+          setFlashProgress(progress);
+        }
+      });
+
+      setFlashProgress(90);
+      setFlashStatus('Resetting chip...');
+      
+      // Reset the chip
+      await esploader.after('hard_reset');
+      setFlashProgress(100);
+      
+      setFlashStatus('Flash completed successfully! Device is resetting...');
+
     } catch (error) {
+      console.error('Flash error:', error);
       setFlashStatus(`Flash failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsFlashing(false);
+      // Don't disconnect here - user might want to use serial monitor
     }
   }, [isConnected, firmwareFile, firmwareBlob, firmwareSource, firmwareVersion]);
 

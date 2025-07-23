@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { MainContent, SplitLayout, Panel } from '../../components/Layout/MainContent';
 import { FirmwareSelector } from '../../components/FirmwareSelector';
+import { DFUDevice, findDfuInterfaces } from './dfu-webdfu';
+import './DaisyFlasher.css';
 
 interface SerialMessage {
   timestamp: Date;
@@ -9,29 +11,33 @@ interface SerialMessage {
   type: 'data' | 'info' | 'error';
 }
 
-
 export const DaisyFlasher: React.FC = () => {
-  // DFU flashing state
+  // Connection state
   const [isConnected, setIsConnected] = useState(false);
   const [isFlashing, setIsFlashing] = useState(false);
   const [flashProgress, setFlashProgress] = useState(0);
   const [flashStatus, setFlashStatus] = useState<string>('');
   const [deviceInfo, setDeviceInfo] = useState<string>('');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  
-  // Firmware handling
-  const [firmwareBlob, setFirmwareBlob] = useState<Blob | null>(null);
-  const [firmwareSource, setFirmwareSource] = useState<'file' | 'selector'>('selector');
 
   // Serial monitoring state
   const [serialConnected, setSerialConnected] = useState(false);
   const [serialMessages, setSerialMessages] = useState<SerialMessage[]>([]);
   const [serialInput, setSerialInput] = useState('');
   const [baudRate, setBaudRate] = useState(115200);
+  const serialBufferRef = useRef<string>('');
 
-  // Refs
-  const deviceRef = useRef<USBDevice | null>(null);
-  const portRef = useRef<SerialPort | null>(null);
+  // Firmware handling
+  const [firmwareFile, setFirmwareFile] = useState<File | null>(null);
+  const [firmwareBlob, setFirmwareBlob] = useState<Blob | null>(null);
+  const [firmwareVersion, setFirmwareVersion] = useState<string>('');
+  const [firmwareSource, setFirmwareSource] = useState<'file' | 'selector'>('selector');
+
+  // Full erase option
+  const [fullErase, setFullErase] = useState(false);
+
+  // DFU device ref
+  const dfuDeviceRef = useRef<DFUDevice | null>(null);
+  const serialPortRef = useRef<SerialPort | null>(null);
   const readerRef = useRef<ReadableStreamDefaultReader | null>(null);
   const writerRef = useRef<WritableStreamDefaultWriter | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -56,38 +62,54 @@ export const DaisyFlasher: React.FC = () => {
     setSerialMessages(prev => [...prev, message]);
   }, []);
 
-  // Connect to Daisy in DFU mode
-  const connectDFU = useCallback(async () => {
+  // Connect to Daisy device via WebUSB
+  const connectForFlashing = useCallback(async () => {
     if (!('usb' in navigator)) {
-      setFlashStatus('WebUSB not supported. Please use Chrome or Edge.');
+      setFlashStatus('WebUSB API not supported. Please use Chrome or Edge.');
       return;
     }
 
     try {
-      // Request Daisy Seed USB device
-      // STMicroelectronics DFU mode: VID=0x0483, PID=0xDF11
-      const device = await (navigator as any).usb.requestDevice({
+      // Request USB device with STM32 vendor ID
+      const device = await navigator.usb.requestDevice({
         filters: [
-          { vendorId: 0x0483, productId: 0xDF11 }, // STM DFU mode
-          { vendorId: 0x0483, productId: 0x5740 }  // STM in application mode
+          { vendorId: 0x0483 }, // STMicroelectronics
         ]
       });
 
-      await device.open();
-
-      if (device.configuration === null) {
-        await device.selectConfiguration(1);
+      // Find DFU interface
+      const interfaces = findDfuInterfaces(device);
+      if (interfaces.length === 0) {
+        throw new Error('No DFU interface found. Make sure device is in DFU mode.');
       }
 
-      await device.claimInterface(0);
+      console.log('Found DFU interfaces:', interfaces);
 
+      // List all interfaces for debugging
+      interfaces.forEach((iface, index) => {
+        console.log(`Interface ${index}: ${iface.name}, alt=${iface.alternate.alternateSetting}`);
+      });
+
+      // Use the first DFU interface (typically Flash interface)
+      const dfuInterface = interfaces[0];
+      const dfuDevice = new DFUDevice(device, dfuInterface);
+
+      await dfuDevice.open();
+
+      dfuDeviceRef.current = dfuDevice;
       setIsConnected(true);
-      setDeviceInfo(`${device.productName || 'Daisy Seed'} (${device.manufacturerName || 'STMicroelectronics'})`);
-      setFlashStatus('Connected to Daisy Seed in DFU mode. Ready to flash.');
 
-      deviceRef.current = device;
+      // Get device info
+      const state = await dfuDevice.getState();
+      console.log('DFU State:', state);
+
+      setDeviceInfo(`Daisy Seed - ${dfuInterface.name || 'DFU Mode'}`);
+      setFlashStatus('Connected to Daisy Seed. Ready to flash.');
+
     } catch (error) {
-      setFlashStatus(`DFU connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setFlashStatus(`Connection failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setIsConnected(false);
+      dfuDeviceRef.current = null;
     }
   }, []);
 
@@ -99,7 +121,7 @@ export const DaisyFlasher: React.FC = () => {
     }
 
     try {
-      const port = await (navigator as any).serial.requestPort();
+      const port = await navigator.serial.requestPort();
       await port.open({
         baudRate: baudRate,
         dataBits: 8,
@@ -108,7 +130,7 @@ export const DaisyFlasher: React.FC = () => {
         flowControl: 'none'
       });
 
-      portRef.current = port;
+      serialPortRef.current = port;
       setSerialConnected(true);
       addSerialMessage('out', `Connected at ${baudRate} baud`, 'info');
 
@@ -122,13 +144,26 @@ export const DaisyFlasher: React.FC = () => {
       // Read loop
       const readLoop = async () => {
         try {
-          while (serialConnected && reader) {
+          while (true) {
             const { value, done } = await reader.read();
             if (done) break;
 
             const decoder = new TextDecoder();
             const text = decoder.decode(value);
-            addSerialMessage('in', text);
+            
+            // Add to buffer
+            serialBufferRef.current += text;
+            
+            // Process complete lines
+            const lines = serialBufferRef.current.split(/\r?\n/);
+            serialBufferRef.current = lines.pop() || ''; // Keep incomplete line in buffer
+            
+            // Display each complete line
+            for (const line of lines) {
+              if (line.trim()) {
+                addSerialMessage('in', line);
+              }
+            }
           }
         } catch (error) {
           if (error instanceof Error && error.name !== 'NetworkError') {
@@ -156,9 +191,9 @@ export const DaisyFlasher: React.FC = () => {
         writerRef.current = null;
       }
 
-      if (portRef.current) {
-        await portRef.current.close();
-        portRef.current = null;
+      if (serialPortRef.current) {
+        await serialPortRef.current.close();
+        serialPortRef.current = null;
       }
 
       setSerialConnected(false);
@@ -174,7 +209,7 @@ export const DaisyFlasher: React.FC = () => {
 
     try {
       const encoder = new TextEncoder();
-      const data = encoder.encode(serialInput + '\n');
+      const data = encoder.encode(serialInput + '\r\n');
       await writerRef.current.write(data);
       addSerialMessage('out', serialInput);
       setSerialInput('');
@@ -186,78 +221,117 @@ export const DaisyFlasher: React.FC = () => {
   // Handle firmware from selector
   const handleFirmwareFromSelector = useCallback((binary: Blob, version: string) => {
     setFirmwareBlob(binary);
-    setSelectedFile(null);
+    setFirmwareVersion(version);
+    setFirmwareFile(null);
     setFirmwareSource('selector');
     setFlashStatus(`Loaded firmware ${version} from repository. Ready to flash.`);
   }, []);
 
-  // Handle file selection (updated to work with firmware source tracking)
+  // Handle file selection
   const handleFileSelect = useCallback((file: File | null) => {
-    setSelectedFile(file);
+    setFirmwareFile(file);
     setFirmwareBlob(null);
+    setFirmwareVersion('');
     setFirmwareSource('file');
   }, []);
 
-
-  // Flash firmware using DFU
+  // Flash firmware via DFU
   const flashFirmware = useCallback(async () => {
-    if (!isConnected || !deviceRef.current) {
-      setFlashStatus('Please connect to Daisy in DFU mode first.');
+    if (!isConnected || !dfuDeviceRef.current) {
+      setFlashStatus('Please connect to device first.');
       return;
     }
 
-    const hasFirmware = firmwareSource === 'file' ? !!selectedFile : !!firmwareBlob;
+    const hasFirmware = firmwareSource === 'file' ? !!firmwareFile : !!firmwareBlob;
     if (!hasFirmware) {
-      setFlashStatus('Please load firmware first (either from repository or file).');
+      setFlashStatus('Please load firmware first.');
       return;
     }
 
     setIsFlashing(true);
     setFlashProgress(0);
-    setFlashStatus('Starting DFU flash process...');
+    setFlashStatus('Starting Daisy flash process...');
 
     try {
-      // Get firmware data from either source
-      let firmware: Uint8Array;
-      if (firmwareSource === 'file' && selectedFile) {
-        const arrayBuffer = await selectedFile.arrayBuffer();
-        firmware = new Uint8Array(arrayBuffer);
-      } else if (firmwareSource === 'selector' && firmwareBlob) {
-        const arrayBuffer = await firmwareBlob.arrayBuffer();
-        firmware = new Uint8Array(arrayBuffer);
+      const device = dfuDeviceRef.current;
+
+      // Get firmware data
+      let firmwareData: ArrayBuffer;
+      const firmwareName = firmwareSource === 'file'
+        ? firmwareFile!.name
+        : `firmware ${firmwareVersion}`;
+
+      if (firmwareSource === 'file' && firmwareFile) {
+        firmwareData = await firmwareFile.arrayBuffer();
+      } else if (firmwareBlob) {
+        firmwareData = await firmwareBlob.arrayBuffer();
       } else {
         throw new Error('No firmware data available');
       }
 
-      setFlashStatus('Erasing flash memory...');
-      setFlashProgress(10);
+      console.log(`Flashing ${firmwareData.byteLength} bytes`);
 
-      // In a real implementation, you'd use WebUSB DFU protocol here
-      // This simulates the DFU flashing process
-      const chunkSize = 1024;
-      const totalChunks = Math.ceil(firmware.length / chunkSize);
-
-      for (let i = 0; i < totalChunks; i++) {
-        const progress = 10 + (80 * i / totalChunks);
-        setFlashProgress(progress);
-        setFlashStatus(`Flashing... ${Math.round(progress)}%`);
-
-        // Simulate chunk writing
-        await new Promise(resolve => setTimeout(resolve, 50));
+      // Clear any error status
+      try {
+        await device.clearStatus();
+      } catch (e) {
+        console.warn('Clear status failed, continuing...', e);
       }
 
-      setFlashProgress(95);
-      setFlashStatus('Verifying flash...');
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // Set up progress monitoring
+      device.logProgress = (done: number, total: number) => {
+        const percent = Math.round((done / total) * 100);
+        setFlashProgress(percent);
+        setFlashStatus(`Downloading... ${percent}% (${done} / ${total} bytes)`);
+      };
+
+      device.logInfo = (msg: string) => {
+        console.log('DFU:', msg);
+        setFlashStatus(msg);
+      };
+
+      device.logWarning = (msg: string) => {
+        console.warn('DFU:', msg);
+        setFlashStatus(`Warning: ${msg}`);
+      };
+
+      device.logError = (msg: string) => {
+        console.error('DFU:', msg);
+        setFlashStatus(`Error: ${msg}`);
+      };
+
+      device.logDebug = (msg: string) => {
+        console.debug('DFU:', msg);
+      };
+
+      // Download firmware using the webdfu-compatible method
+      await device.do_download(device.transferSize, firmwareData, true, fullErase);
 
       setFlashProgress(100);
-      setFlashStatus('Flash completed successfully! Reset your Daisy to run the new firmware.');
+      setFlashStatus('File downloaded successfully. Daisy will restart with new firmware.');
+
     } catch (error) {
+      console.error('Flash error:', error);
       setFlashStatus(`Flash failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsFlashing(false);
     }
-  }, [isConnected, selectedFile, firmwareBlob, firmwareSource]);
+  }, [isConnected, firmwareFile, firmwareBlob, firmwareSource, firmwareVersion, fullErase]);
+
+  // Disconnect DFU
+  const disconnectDFU = useCallback(async () => {
+    if (dfuDeviceRef.current) {
+      try {
+        await dfuDeviceRef.current.close();
+      } catch (e) {
+        console.warn('DFU disconnect error:', e);
+      }
+      dfuDeviceRef.current = null;
+      setIsConnected(false);
+      setDeviceInfo('');
+      setFlashStatus('Disconnected');
+    }
+  }, []);
 
   // Clear serial messages
   const clearMessages = useCallback(() => {
@@ -269,37 +343,26 @@ export const DaisyFlasher: React.FC = () => {
       <MainContent>
         <SplitLayout
           left={
-            <Panel title="Daisy DFU Flasher" className="flasher-panel">
+            <Panel title="Daisy Seed Flasher" className="flasher-panel">
               <div className="flasher-content">
                 <div className="connection-section">
-                  <h3>DFU Connection</h3>
+                  <h3>Device Connection</h3>
                   <div className="connection-controls">
                     <button
-                      onClick={connectDFU}
+                      onClick={isConnected ? disconnectDFU : connectForFlashing}
                       className={`connect-button btn-primary ${isConnected ? 'connected' : ''}`}
                       disabled={isFlashing}
                     >
-                      {isConnected ? 'DFU Connected' : 'Connect DFU'}
+                      {isConnected ? 'Disconnect' : 'Connect Device (DFU Mode)'}
                     </button>
-                    {deviceInfo && (
-                      <div className="device-info">
-                        <span>{deviceInfo}</span>
-                      </div>
-                    )}
                   </div>
-
-                  <div className="bootloader-instructions">
-                    <h4>Daisy Bootloader Instructions:</h4>
+                  <div className="dfu-instructions">
+                    <p>To enter DFU mode on Daisy Seed:</p>
                     <ol>
-                      <li>Ensure your Daisy has the <strong>Daisy bootloader</strong> installed</li>
-                      <li>Look for the <strong>breathing LED pattern</strong> indicating bootloader mode</li>
-                      <li>To extend timeout indefinitely: press <strong>BOOT</strong> button (no RESET needed)</li>
-                      <li>Connect via DFU for flashing larger programs</li>
+                      <li>Hold BOOT button</li>
+                      <li>Press and release RESET</li>
+                      <li>Release BOOT (LED will blink)</li>
                     </ol>
-                    <div className="bootloader-note">
-                      <strong>Note:</strong> The Daisy bootloader allows flashing much larger programs than the built-in bootloader.
-                      It accepts new binaries during the timeout period indicated by breathing LED.
-                    </div>
                   </div>
                 </div>
 
@@ -309,22 +372,26 @@ export const DaisyFlasher: React.FC = () => {
                     onFirmwareLoad={handleFirmwareFromSelector}
                     disabled={isFlashing}
                   />
-                  
+
                   <div className="manual-upload">
                     <h4>Or upload custom firmware:</h4>
                     <div className="file-controls">
+                      <div className="file-info">
+                        <label>Daisy Firmware (.bin)</label>
+                        <span className="address">@ 0x90040000</span>
+                      </div>
                       <input
                         type="file"
-                        accept=".bin,.hex,.dfu"
+                        accept=".bin"
                         onChange={(e) => handleFileSelect(e.target.files?.[0] || null)}
                         className="file-input"
                         disabled={isFlashing}
                       />
-                      {selectedFile && (
+                      {firmwareFile && (
                         <div className="file-selected">
-                          <span className="file-name">{selectedFile.name}</span>
+                          <span className="file-name">{firmwareFile.name}</span>
                           <span className="file-size">
-                            ({(selectedFile.size / 1024).toFixed(1)} KB)
+                            ({(firmwareFile.size / 1024).toFixed(1)} KB)
                           </span>
                         </div>
                       )}
@@ -333,11 +400,22 @@ export const DaisyFlasher: React.FC = () => {
                 </div>
 
                 <div className="flash-section">
+                  <div className="erase-option">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={fullErase}
+                        onChange={(e) => setFullErase(e.target.checked)}
+                        disabled={isFlashing}
+                      />
+                      &nbsp;Perform full erase before flashing (slower)
+                    </label>
+                  </div>
                   <h3>Flash Process</h3>
                   <button
                     onClick={flashFirmware}
                     className="flash-button btn-primary"
-                    disabled={!isConnected || (!selectedFile && !firmwareBlob) || isFlashing}
+                    disabled={!isConnected || (!firmwareFile && !firmwareBlob) || isFlashing}
                   >
                     {isFlashing ? 'Flashing...' : 'Flash Firmware'}
                   </button>
@@ -355,8 +433,8 @@ export const DaisyFlasher: React.FC = () => {
                   )}
 
                   {flashStatus && (
-                    <div className={`flash-status ${flashStatus.includes('failed') || flashStatus.includes('error') ? 'error' : flashStatus.includes('success') || flashStatus.includes('completed') ? 'success' : 'info'}`}>
-                      <pre>{flashStatus}</pre>
+                    <div className={`flash-status ${flashStatus.includes('failed') || flashStatus.includes('error') ? 'error' : flashStatus.includes('success') ? 'success' : 'info'}`}>
+                      {flashStatus}
                     </div>
                   )}
                 </div>
@@ -443,11 +521,11 @@ export const DaisyFlasher: React.FC = () => {
       <div className="tool-status">
         <div className="status-left">
           <div className="status-item">
-            <span>Daisy Flasher</span>
+            <span>Daisy Seed Flasher</span>
           </div>
           {isConnected && (
             <div className="status-item success">
-              <span>DFU: {deviceInfo || 'Connected'}</span>
+              <span>Device: {deviceInfo || 'Connected'}</span>
             </div>
           )}
           {serialConnected && (

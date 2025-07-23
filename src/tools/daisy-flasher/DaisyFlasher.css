@@ -39,17 +39,6 @@
   transition: all 0.2s ease;
 }
 
-.tool-button.secondary {
-  background-color: transparent;
-  color: var(--color-text-secondary);
-  border-color: var(--color-border-muted);
-}
-
-.tool-button.secondary:hover {
-  background-color: var(--color-background-secondary);
-  color: var(--color-text-primary);
-}
-
 .tool-button:hover {
   background-color: var(--surface-hover);
   border-color: var(--accent-color);
@@ -73,7 +62,7 @@
 }
 
 .connection-section,
-.file-section,
+.firmware-section,
 .flash-section {
   margin-bottom: 2rem;
   padding-bottom: 1rem;
@@ -86,7 +75,7 @@
 }
 
 .connection-section h3,
-.file-section h3,
+.firmware-section h3,
 .flash-section h3 {
   margin: 0 0 1rem 0;
   font-size: 1rem;
@@ -98,7 +87,6 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 1rem;
 }
 
 .connect-button {
@@ -140,57 +128,76 @@
   color: var(--color-text-secondary);
 }
 
-/* Bootloader Instructions */
-.bootloader-instructions {
+/* DFU Instructions */
+.dfu-instructions {
+  margin-top: 1rem;
   padding: 1rem;
   background-color: var(--color-background-secondary);
   border-radius: 8px;
   border: 1px solid var(--color-border-muted);
 }
 
-.bootloader-instructions h4 {
+.dfu-instructions p {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.dfu-instructions ol {
+  margin: 0;
+  padding-left: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+.dfu-instructions li {
+  margin-bottom: 0.25rem;
+}
+
+/* Firmware Section */
+.manual-upload {
+  margin-top: 1.5rem;
+}
+
+.manual-upload h4 {
   margin: 0 0 0.75rem 0;
   font-size: 0.9rem;
   color: var(--color-text-primary);
   font-weight: 600;
 }
 
-.bootloader-instructions ol {
-  margin: 0 0 1rem 0;
-  padding-left: 1.5rem;
-  color: var(--color-text-secondary);
-  font-size: 0.85rem;
-  line-height: 1.5;
-}
-
-.bootloader-instructions li {
-  margin-bottom: 0.5rem;
-}
-
-.bootloader-instructions strong {
-  color: var(--color-amber);
-  font-weight: 600;
-}
-
-.bootloader-note {
-  padding: 0.75rem;
-  background-color: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-radius: 6px;
-  font-size: 0.8rem;
-  line-height: 1.4;
-  color: var(--color-info);
-}
-
-.bootloader-note strong {
-  color: var(--color-info);
-}
-
-/* File Section */
 .file-controls {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
+}
+
+.file-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.file-info label {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.memory-select {
+  padding: 0.5rem;
+  border: 1px solid var(--color-border-muted);
+  border-radius: 6px;
+  background-color: var(--color-background-secondary);
+  color: var(--color-text-primary);
+  font-size: 0.85rem;
+  font-family: 'SF Mono', Consolas, monospace;
+}
+
+.memory-select:focus {
+  outline: none;
+  border-color: var(--color-amber);
+  box-shadow: 0 0 0 2px rgba(var(--color-glow-rgb), 0.3);
 }
 
 .file-input {
@@ -296,13 +303,6 @@
   line-height: 1.4;
 }
 
-.flash-status pre {
-  margin: 0;
-  font-family: inherit;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-}
-
 .flash-status.info {
   background-color: rgba(59, 130, 246, 0.1);
   border: 1px solid rgba(59, 130, 246, 0.3);
@@ -321,7 +321,7 @@
   color: var(--color-error);
 }
 
-/* Serial Panel - Shared styles with ESP32 */
+/* Serial Panel */
 .serial-content {
   display: flex;
   flex-direction: column;
@@ -581,15 +581,5 @@
   .timestamp,
   .direction {
     min-width: auto;
-  }
-  
-  .bootloader-instructions {
-    font-size: 0.8rem;
-  }
-  
-  .file-selected {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
   }
 }

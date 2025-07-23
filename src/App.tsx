@@ -90,38 +90,38 @@ const AppContent: React.FC = () => {
         handleCloseSettings();
       }
     },
-    onSave: () => {}, // Individual tools handle saving
-    onLoad: () => {}, // Individual tools handle loading
-    onExecute: () => {}, // Individual tools handle execution
+    onSave: () => { }, // Individual tools handle saving
+    onLoad: () => { }, // Individual tools handle loading
+    onExecute: () => { }, // Individual tools handle execution
   });
 
   const ActiveToolComponent = activeTool.component;
 
   return (
     <div className="dro-app">
-      <VerticalNavbar 
+      <VerticalNavbar
         tools={TOOLS}
         activeTool={activeTool}
         onToolChange={handleToolChange}
       />
-      
+
       <div className="app-with-navbar">
-        <Header 
+        <Header
           onSettings={handleSettings}
           toolName={activeTool.name}
           toolDescription={activeTool.description}
         />
-        
+
         <main className="tool-container">
           <ActiveToolComponent />
         </main>
       </div>
 
-      <SettingsModal 
+      <SettingsModal
         isOpen={isSettingsOpen}
         onClose={handleCloseSettings}
       />
-      
+
       <PWAStatus />
     </div>
   );

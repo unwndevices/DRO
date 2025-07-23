@@ -67,13 +67,24 @@ export const FirmwareSelector: React.FC<FirmwareSelectorProps> = ({
     setLoading(true);
     try {
       const url = release.platforms[platform];
-      const response = await fetch(url);
+      console.log(`Downloading firmware from: ${url}`);
+      
+      // Try direct fetch first
+      let response = await fetch(url, {
+        mode: 'cors',
+        cache: 'no-cache'
+      }).catch(async (e) => {
+        console.warn('Direct fetch failed, trying with cache:', e);
+        // Try with default cache if CORS fails
+        return fetch(url);
+      });
       
       if (!response.ok) {
         throw new Error(`Download failed: ${response.status} ${response.statusText}`);
       }
       
       const binary = await response.blob();
+      console.log(`Downloaded firmware: ${binary.size} bytes`);
       
       onFirmwareLoad(binary, version);
     } catch (error) {
