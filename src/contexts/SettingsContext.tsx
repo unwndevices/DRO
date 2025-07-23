@@ -28,15 +28,15 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
         setSettings(mergedSettings);
         
         // Apply theme immediately after loading from localStorage
-        applyThemeColors(mergedSettings.theme.accentColor, mergedSettings.theme.backgroundColor);
+        applyThemeColors(mergedSettings.theme.accentColor, mergedSettings.theme.backgroundColor, mergedSettings.theme.textColor);
       } else {
         // Apply default theme if no saved settings
-        applyThemeColors(defaultSettingsValue.theme.accentColor, defaultSettingsValue.theme.backgroundColor);
+        applyThemeColors(defaultSettingsValue.theme.accentColor, defaultSettingsValue.theme.backgroundColor, defaultSettingsValue.theme.textColor);
       }
     } catch (error) {
       console.warn('DRO: Failed to load settings from localStorage:', error);
       // Apply default theme on error
-      applyThemeColors(defaultSettingsValue.theme.accentColor, defaultSettingsValue.theme.backgroundColor);
+      applyThemeColors(defaultSettingsValue.theme.accentColor, defaultSettingsValue.theme.backgroundColor, defaultSettingsValue.theme.textColor);
     }
   }, []);
 
@@ -54,7 +54,8 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
     if (newSettings.theme) {
       applyThemeColors(
         updatedSettings.theme.accentColor, 
-        updatedSettings.theme.backgroundColor
+        updatedSettings.theme.backgroundColor,
+        updatedSettings.theme.textColor
       );
     }
     
@@ -77,7 +78,7 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
     }
     
     // Apply default theme
-    applyThemeColors(defaultSettingsValue.theme.accentColor, defaultSettingsValue.theme.backgroundColor);
+    applyThemeColors(defaultSettingsValue.theme.accentColor, defaultSettingsValue.theme.backgroundColor, defaultSettingsValue.theme.textColor);
   };
 
   const contextValue: SettingsContextType = {

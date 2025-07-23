@@ -180,7 +180,7 @@
 @media print {
   .dro-enhanced-spectrum-chart {
     break-inside: avoid;
-    border: 1px solid #000;
+    border: 1px solid black;
   }
   
   .dro-chart-info {

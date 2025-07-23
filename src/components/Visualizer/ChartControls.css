@@ -2,12 +2,12 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-md);
-  padding: 12px;
+  padding: var(--spacing-md);
   background: rgba(var(--color-background-rgb, 24, 24, 24), 0.9);
   border-bottom: 1px solid var(--color-border-muted);
   align-items: center;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 .dro-control-group {
@@ -25,7 +25,7 @@
 .dro-control-label {
   color: var(--color-text-secondary);
   font-weight: 500;
-  font-size: 11px;
+  font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -34,17 +34,18 @@
   background: var(--color-background);
   border: 1px solid var(--color-border-muted);
   color: var(--color-amber);
-  padding: 4px 8px;
+  padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--border-radius-sm);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 0.7rem;
   outline: none;
-  transition: border-color 0.2s;
+  transition: all var(--transition-fast);
 }
 
 .dro-select:focus {
   border-color: var(--color-amber);
-  box-shadow: 0 0 0 1px rgba(var(--color-glow-rgb), 0.3);
+  box-shadow: 0 0 0 2px rgba(var(--color-glow-rgb), 0.2);
+  background: var(--color-background-tertiary);
 }
 
 .dro-select option {
@@ -52,92 +53,35 @@
   color: var(--color-amber);
 }
 
-.dro-button {
-  background: var(--color-background);
-  border: 1px solid var(--color-border-muted);
-  color: var(--color-text-secondary);
-  padding: 6px 12px;
-  border-radius: var(--border-radius-sm);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  cursor: pointer;
-  transition: all 0.2s;
-  outline: none;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.dro-button:hover {
-  border-color: var(--color-amber);
-  color: var(--color-amber);
-  box-shadow: var(--shadow-glow);
-}
-
+/* Use global .btn classes instead of custom button styles */
 .dro-button-primary {
-  background: var(--color-amber);
-  color: var(--color-background);
-  border-color: var(--color-amber);
-  font-size: 14px;
+  font-size: 0.875rem;
   min-width: 40px;
 }
 
-.dro-button-primary:hover {
-  background: var(--color-amber-light);
-  border-color: var(--color-amber-light);
-  box-shadow: var(--shadow-glow-strong);
-}
-
 .dro-button-secondary {
-  font-size: 10px;
-  padding: 4px 8px;
+  font-size: 0.7rem;
   min-width: 45px;
 }
 
 .dro-frame-info {
   color: var(--color-text-muted);
-  font-size: 11px;
+  font-size: 0.7rem;
   min-width: 60px;
   text-align: center;
 }
 
+/* Use global range input styles instead - keeping only specific sizing overrides */
 .dro-slider {
-  -webkit-appearance: none;
-  background: var(--color-background-tertiary);
   height: 6px;
-  border-radius: 3px;
-  outline: none;
-  transition: background 0.2s;
-}
-
-.dro-slider:hover {
-  background: var(--color-background-secondary);
 }
 
 .dro-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--color-amber);
-  cursor: pointer;
   border: 2px solid var(--color-background);
-  transition: all 0.2s;
-}
-
-.dro-slider::-webkit-slider-thumb:hover {
-  background: var(--color-amber-light);
-  transform: scale(1.1);
-  box-shadow: var(--shadow-glow-strong);
 }
 
 .dro-slider::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--color-amber);
-  cursor: pointer;
   border: 2px solid var(--color-background);
-  transition: all 0.2s;
 }
 
 .dro-frame-slider .dro-slider {
@@ -151,7 +95,7 @@
 
 .dro-zoom-value {
   color: var(--color-text-muted);
-  font-size: 10px;
+  font-size: 0.65rem;
   min-width: 30px;
 }
 
@@ -159,7 +103,7 @@
 @media (max-width: 768px) {
   .dro-chart-controls {
     flex-direction: column;
-    gap: 12px;
+    gap: var(--spacing-md);
     align-items: stretch;
   }
   
@@ -176,17 +120,7 @@
   }
 }
 
-/* Animation for active states */
-.dro-button:active {
-  transform: translateY(1px);
-}
-
+/* Custom animations for sliders */
 .dro-slider:active::-webkit-slider-thumb {
   transform: scale(1.2);
-}
-
-/* Glow effect for focus states */
-.dro-select:focus,
-.dro-button:focus {
-  box-shadow: 0 0 0 2px rgba(var(--color-glow-rgb), 0.3);
 } 

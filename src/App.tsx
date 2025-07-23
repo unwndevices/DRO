@@ -1,123 +1,68 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Header } from './components/Layout/Header';
-import { MainContent, SplitLayout, Panel } from './components/Layout/MainContent';
-import { CodeEditor } from './components/Editor/CodeEditor';
-import { SimpleSpectrumChart } from './components/Visualizer/SimpleSpectrumChart';
 import { SettingsModal } from './components/UI/SettingsModal';
+import { PWAStatus } from './components/UI/PWAStatus';
+import { VerticalNavbar, DEFAULT_TOOLS, type Tool } from './components/Navigation/VerticalNavbar';
 import { SettingsProvider, useSettings } from './contexts/SettingsContext';
+import { SpectralAnalysis } from './tools/spectral-analysis/SpectralAnalysis';
+import { DatumViewer } from './tools/datum-viewer/DatumViewer';
+import { ESP32Flasher } from './tools/esp32-flasher/ESP32Flasher';
+import { DaisyFlasher } from './tools/daisy-flasher/DaisyFlasher';
+import { UIGraphicsConverter } from './tools/ui-graphics/UIGraphicsConverter';
 
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
-import { luaService } from './services/LuaEngine/LuaService';
-import type { Datum } from './services/DataModel/types.ts';
+import { pwaService } from './services/PWAService';
 import './styles/globals.css';
+import './components/Navigation/VerticalNavbar.css';
+import './tools/spectral-analysis/SpectralAnalysis.css';
+import './tools/datum-viewer/DatumViewer.css';
+import './tools/esp32-flasher/ESP32Flasher.css';
+import './tools/daisy-flasher/DaisyFlasher.css';
+import './tools/ui-graphics/UIGraphicsConverter.css';
 
-interface Template {
-  name: string;
-  description: string;
-  getCode: () => string;
-}
-
-const templates: Template[] = [
+// Tools configuration
+const TOOLS: Tool[] = [
   {
-    name: 'Default Spectral',
-    description: 'Frequency-based sine wave with bass boost',
-    getCode: () => luaService.getDefaultTemplate()
+    ...DEFAULT_TOOLS[0],
+    component: SpectralAnalysis
   },
   {
-    name: 'Simple Test',
-    description: 'Basic test: band index pattern',
-    getCode: () => luaService.getSimpleTestTemplate()
+    ...DEFAULT_TOOLS[1],
+    component: DatumViewer
   },
   {
-    name: 'Diagonal Test',
-    description: 'Band i lights up at frame i',
-    getCode: () => luaService.getDiagonalTestTemplate()
+    ...DEFAULT_TOOLS[2],
+    component: ESP32Flasher
   },
   {
-    name: 'Simple Sine Wave',
-    description: 'Basic sine wave across all bands',
-    getCode: () => luaService.getSineWaveTemplate()
+    ...DEFAULT_TOOLS[3],
+    component: DaisyFlasher
   },
   {
-    name: 'Frequency Response',
-    description: 'Low-pass filter response curve',
-    getCode: () => luaService.getFrequencyResponseTemplate()
+    ...DEFAULT_TOOLS[4],
+    component: UIGraphicsConverter
   }
 ];
 
 // AppContent component that uses settings context
 const AppContent: React.FC = () => {
   const { settings, updateSettings } = useSettings();
-  const [scriptContent, setScriptContent] = useState('');
-  const [spectralData, setSpectralData] = useState<Datum | null>(null);
-  const [currentFrame, setCurrentFrame] = useState(0);
-  const [frameCount, setFrameCount] = useState(128);
-  const [errors, setErrors] = useState<Array<{ message: string; line?: number }>>([]);
-  const [isExecuting, setIsExecuting] = useState(false);
+  const [activeTool, setActiveTool] = useState(() => {
+    const savedToolId = localStorage.getItem('dro-active-tool');
+    return TOOLS.find(tool => tool.id === savedToolId) || TOOLS[0];
+  });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const executeLuaScript = useCallback(async (code: string) => {
-    setIsExecuting(true);
-    setErrors([]);
+  const handleToolChange = useCallback((tool: Tool) => {
+    setActiveTool(tool);
+    localStorage.setItem('dro-active-tool', tool.id);
+  }, []);
 
-    try {
-      const result = await luaService.executeScript(code, frameCount);
-      
-      if (result.success && result.datum) {
-        setSpectralData(result.datum);
-        setCurrentFrame(0);
-        
-        console.log(`DRO: Lua execution successful in ${result.executionTime.toFixed(2)}ms`);
-      } else if (result.errors) {
-        setErrors(result.errors);
-        console.error('DRO: Lua execution failed:', result.errors);
-      }
-      
-    } catch (error) {
-      setErrors([{
-        message: error instanceof Error ? error.message : 'Unknown execution error',
-        line: 1,
-      }]);
-      console.error('DRO: Execution error:', error);
-    } finally {
-      setIsExecuting(false);
-    }
-  }, [frameCount]);
-
-  // Initialize with default template and execute it
+  // Initialize PWA service
   useEffect(() => {
-    const defaultScript = templates[0].getCode();
-    setScriptContent(defaultScript);
-    executeLuaScript(defaultScript);
-  }, [executeLuaScript]);
-
-  const handleTemplateSelect = useCallback((code: string) => {
-    setScriptContent(code);
-    executeLuaScript(code);
-  }, [executeLuaScript]);
-
-  const handleSave = useCallback(() => {
-    // Mock save functionality
-    const scriptData = {
-      content: scriptContent,
-      timestamp: new Date().toISOString()
-    };
-    localStorage.setItem('dro-script', JSON.stringify(scriptData));
-    console.log('DRO: Script saved to localStorage');
-  }, [scriptContent]);
-
-  const handleLoad = useCallback(() => {
-    // Mock load functionality
-    try {
-      const saved = localStorage.getItem('dro-script');
-      if (saved) {
-        const scriptData = JSON.parse(saved);
-        setScriptContent(scriptData.content || '');
-        console.log('DRO: Script loaded from localStorage');
-      }
-    } catch (error) {
-      console.error('DRO: Error loading script:', error);
-    }
+    pwaService.initialize().catch(error => {
+      console.error('DRO: PWA initialization failed:', error);
+    });
   }, []);
 
   const handleSettings = useCallback(() => {
@@ -145,81 +90,39 @@ const AppContent: React.FC = () => {
         handleCloseSettings();
       }
     },
-    onSave: handleSave,
-    onLoad: handleLoad,
-    onExecute: () => executeLuaScript(scriptContent),
+    onSave: () => {}, // Individual tools handle saving
+    onLoad: () => {}, // Individual tools handle loading
+    onExecute: () => {}, // Individual tools handle execution
   });
+
+  const ActiveToolComponent = activeTool.component;
 
   return (
     <div className="dro-app">
-      <Header 
-        onSave={handleSave}
-        onLoad={handleLoad}
-        onSettings={handleSettings}
-        templates={templates}
-        onTemplateSelect={handleTemplateSelect}
+      <VerticalNavbar 
+        tools={TOOLS}
+        activeTool={activeTool}
+        onToolChange={handleToolChange}
       />
       
-      <MainContent>
-        <SplitLayout
-          left={
-            <Panel title="Script Editor" className="editor">
-              <CodeEditor
-                value={scriptContent}
-                onChange={setScriptContent}
-                onExecute={executeLuaScript}
-                errors={errors}
-                className={isExecuting ? 'executing' : ''}
-                frameCount={frameCount}
-                onFrameCountChange={setFrameCount}
-              />
-            </Panel>
-          }
-          right={
-            <Panel title="Datum Preview" className="visualizer">
-              <SimpleSpectrumChart
-                frames={spectralData?.frames || []}
-                currentFrame={currentFrame}
-                onFrameChange={setCurrentFrame}
-                className={`${spectralData ? '' : 'empty'} ${isExecuting ? 'loading' : ''}`}
-              />
-            </Panel>
-          }
+      <div className="app-with-navbar">
+        <Header 
+          onSettings={handleSettings}
+          toolName={activeTool.name}
+          toolDescription={activeTool.description}
         />
-      </MainContent>
-      
-      <div className="dro-status-bar">
-        <div className="dro-status-left">
-          <div className="dro-status-item">
-            <span>DRO v0.2.0 - Lua Engine</span>
-          </div>
-          {spectralData && (
-            <div className="dro-status-item success">
-              <span>Generated: {spectralData.frameCount}f × {spectralData.bandCount}b</span>
-            </div>
-          )}
-          {errors.length > 0 && (
-            <div className="dro-status-item error">
-              <span>Lua Error{errors.length > 1 ? 's' : ''}: {errors.length}</span>
-            </div>
-          )}
-          {isExecuting && (
-            <div className="dro-status-item executing">
-              <span>Executing Lua...</span>
-            </div>
-          )}
-        </div>
-        <div className="dro-status-right">
-          <div className="dro-status-item">
-            <span>{isExecuting ? 'Running' : spectralData ? 'Complete' : 'Ready'}</span>
-          </div>
-        </div>
+        
+        <main className="tool-container">
+          <ActiveToolComponent />
+        </main>
       </div>
 
       <SettingsModal 
         isOpen={isSettingsOpen}
         onClose={handleCloseSettings}
       />
+      
+      <PWAStatus />
     </div>
   );
 };

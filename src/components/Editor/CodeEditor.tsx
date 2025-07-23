@@ -557,7 +557,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         </div>
         {onExecute && (
           <button 
-            className="dro-execute-button"
+            className="dro-execute-button btn-primary"
             onClick={handleExecute}
             title="Execute Script (Ctrl+Enter)"
           >

@@ -58,7 +58,7 @@ export const ChartControls: React.FC<ChartControlsProps> = ({
       <div className="dro-control-group">
         <label className="dro-control-label">Playback:</label>
         <button
-          className="dro-button dro-button-primary"
+          className="dro-button dro-button-primary btn-primary"
           onClick={onPlayPause}
           title={isPlaying ? 'Pause' : 'Play'}
         >
@@ -98,21 +98,21 @@ export const ChartControls: React.FC<ChartControlsProps> = ({
       <div className="dro-control-group">
         <label className="dro-control-label">Export:</label>
         <button
-          className="dro-button dro-button-secondary"
+          className="dro-button dro-button-secondary btn-secondary"
           onClick={() => onExport('json')}
           title="Export as JSON"
         >
           JSON
         </button>
         <button
-          className="dro-button dro-button-secondary"
+          className="dro-button dro-button-secondary btn-secondary"
           onClick={() => onExport('csv')}
           title="Export as CSV"
         >
           CSV
         </button>
         <button
-          className="dro-button dro-button-secondary"
+          className="dro-button dro-button-secondary btn-secondary"
           onClick={() => onExport('png')}
           title="Export as PNG"
         >

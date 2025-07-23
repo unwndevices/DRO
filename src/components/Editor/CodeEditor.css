@@ -17,21 +17,25 @@
   height: 100%;
 }
 
-/* Error display styling */
+/* Error display styling - using global .alert-error class with customizations */
 .dro-editor-errors {
-  background: rgba(var(--color-error-rgb, 255, 68, 68), 0.1);
-  border-top: 1px solid var(--color-error);
   max-height: 120px;
   overflow-y: auto;
   flex-shrink: 0;
+  border-top: 1px solid var(--color-error);
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  margin: 0;
+  border-radius: 0;
 }
 
 .dro-editor-error {
-  padding: 6px 12px;
-  font-size: 12px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: 0.75rem;
   color: var(--color-error);
   font-family: var(--font-mono);
-  border-bottom: 1px solid rgba(var(--color-error-rgb, 255, 68, 68), 0.2);
+  border-bottom: 1px solid rgba(var(--color-error-rgb), 0.2);
 }
 
 .dro-editor-error:last-child {
@@ -52,11 +56,11 @@
 .dro-editor-footer {
   background: rgba(var(--color-background-rgb), 0.95);
   border-top: 1px solid var(--color-border-muted);
-  padding: 12px;
+  padding: var(--spacing-md);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
+  font-size: 0.7rem;
   color: var(--color-text-muted);
   flex-shrink: 0;
   font-family: var(--font-mono);
@@ -66,7 +70,7 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  font-size: 11px;
+  font-size: 0.7rem;
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -84,48 +88,17 @@
 }
 
 .dro-frame-count-control input {
-  background: var(--color-background-tertiary);
-  border: 1px solid var(--color-border-muted);
-  color: var(--color-text);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  border-radius: var(--border-radius-sm);
+  /* Use global input styles with custom width */
   width: 60px;
-  padding: 4px 6px;
-  outline: none;
-  transition: all 0.2s;
+  color: var(--color-text-primary);
+  font-size: 0.75rem;
 }
 
-.dro-frame-count-control input:focus {
-  border-color: var(--color-amber);
-  background: var(--color-background-secondary);
-  box-shadow: 0 0 0 2px rgba(var(--color-glow-rgb), 0.2);
-}
-
+/* Use global .btn .btn-primary class instead of custom execute button */
 .dro-execute-button {
-  background: var(--color-amber);
-  color: var(--color-background);
-  border: none;
-  border-radius: var(--border-radius-sm);
-  padding: var(--spacing-sm) 12px;
-  font-size: 14px;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s;
-  letter-spacing: 0.5px;
-  font-weight: 500;
-  outline: none;
   min-width: 50px;
-}
-
-.dro-execute-button:hover {
-  background: var(--color-amber-light);
-  box-shadow: var(--shadow-glow-strong);
-}
-
-.dro-execute-button:active {
-  background: rgba(var(--color-glow-rgb), 0.2);
-  transform: translateY(1px);
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 0.875rem;
 }
 
 /* Syntax Highlighting Simulation */
@@ -148,7 +121,7 @@
   
   .dro-editor-footer {
     padding: var(--spacing-sm);
-    gap: 12px;
+    gap: var(--spacing-md);
     flex-direction: column;
     align-items: stretch;
   }
@@ -156,7 +129,7 @@
   .dro-editor-info {
     justify-content: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: var(--spacing-md);
   }
   
   .dro-execute-button {
@@ -166,7 +139,7 @@
   
   .dro-frame-count-control label {
     min-width: 50px;
-    font-size: 10px;
+    font-size: 0.65rem;
   }
 }
 

@@ -116,7 +116,7 @@ export function generateColorVariants(baseColor: string): ColorVariants {
 /**
  * Apply theme colors to CSS variables
  */
-export function applyThemeColors(accentColor: string, backgroundColor: string): void {
+export function applyThemeColors(accentColor: string, backgroundColor: string, textColor?: string): void {
     const root = document.documentElement;
 
     // Generate accent color variants
@@ -127,7 +127,7 @@ export function applyThemeColors(accentColor: string, backgroundColor: string): 
     root.style.setProperty('--color-amber', accentVariants.base);
     root.style.setProperty('--color-amber-light', accentVariants.light);
     root.style.setProperty('--color-amber-dark', accentVariants.dark);
-    root.style.setProperty('--color-text-primary', accentVariants.base);
+    root.style.setProperty('--color-text-primary', textColor || accentVariants.base);
     root.style.setProperty('--color-border', accentVariants.base);
     root.style.setProperty('--color-border-muted', accentVariants.dark);
     root.style.setProperty('--color-editor-cursor', accentVariants.base);

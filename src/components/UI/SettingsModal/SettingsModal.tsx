@@ -78,14 +78,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
 
         <div className="settings-modal-footer">
           <button 
-            className="settings-button settings-button-secondary" 
+            className="settings-button settings-button-secondary btn-secondary" 
             onClick={handleReset}
             title="Reset all settings to defaults"
           >
             RESET DEFAULTS
           </button>
           <button 
-            className="settings-button settings-button-primary" 
+            className="settings-button settings-button-primary btn-primary" 
             onClick={onClose}
             title="Close settings dialog"
           >

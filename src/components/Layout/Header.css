@@ -15,7 +15,7 @@
 .dro-title {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: var(--spacing-md);
   margin: 0;
 }
 
@@ -39,71 +39,23 @@
   align-items: center;
 }
 
-.dro-nav-button {
-  background: transparent;
-  border: 1px solid var(--color-border-muted);
-  color: var(--color-text-secondary);
-  padding: 4px 12px;
-  font-size: 0.75rem;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
-
-.dro-nav-button:hover {
-  background-color: var(--color-background-tertiary);
-}
-
-.dro-nav-button:focus {
-  outline: none;
-  border-color: var(--color-amber);
-  box-shadow: 0 0 0 1px rgba(var(--color-glow-rgb), 0.3);
-}
-
-.dro-nav-button:active {
-  background: rgba(var(--color-glow-rgb), 0.1);
-}
+/* Use global .btn .btn-secondary .btn-sm classes instead of custom button styles */
 
 .dro-nav-dropdown {
   position: relative;
   display: inline-block;
 }
 
+/* Use global .dropdown-menu class with custom width override */
 .dro-dropdown-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background-color: var(--color-background-secondary);
-  border: 1px solid var(--color-border-muted);
-  border-radius: var(--border-radius-md);
-  box-shadow: var(--shadow-glow);
-  padding: var(--spacing-sm);
-  z-index: 1000;
   width: 220px;
-  margin-top: var(--spacing-sm);
 }
 
+/* Keep dropdown item styles as they have specific text truncation needs */
 .dro-dropdown-item {
-  display: block;
-  width: 100%;
-  padding: 10px 12px;
-  background: none;
-  border: none;
-  color: var(--color-text-secondary);
-  text-align: left;
-  font-size: 14px;
-  border-radius: var(--border-radius-sm);
-  cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.dro-dropdown-item:hover {
-  background-color: var(--color-background-tertiary);
-  color: var(--color-text-primary);
 }
 
 /* Mobile responsiveness */
@@ -116,7 +68,7 @@
   
   .dro-title {
     flex-direction: column;
-    gap: 2px;
+    gap: var(--spacing-xs);
     align-items: flex-start;
   }
   
@@ -129,8 +81,5 @@
     justify-content: flex-end;
   }
   
-  .dro-nav-button {
-    font-size: 0.7rem;
-    padding: 3px 8px;
-  }
+  /* Use .btn-xs for mobile instead of custom sizing */
 } 

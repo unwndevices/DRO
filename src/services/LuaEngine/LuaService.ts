@@ -571,6 +571,97 @@ function process()
 end`;
   }
 
+  getExponentialDecayTemplate(): string {
+    return `-- Exponential Decay LUT Generator
+-- Generates exponential decay pattern across bands and frames
+-- Equivalent to: amplitude * exp(-decay_rate * (band + frame))
+
+function process()
+    local decay_rate = 0.2
+    local max_amplitude = 1.0
+    
+    -- Calculate exponential decay based on current band and frame
+    local decay_factor = -decay_rate * (i + f)
+    local value = max_amplitude * math.exp(decay_factor)
+    
+    -- Clamp to valid range [0, 1]
+    return math.max(0, math.min(1, value))
+end`;
+  }
+
+  getRandomWalkTemplate(): string {
+    return `-- Random Walk LUT Generator
+-- Each band follows an independent random walk over time
+-- Reproduces the behavior of the Python random walk algorithm
+
+function process()
+    local step_size = 0.1
+    local seed = 42
+    
+    -- Initialize pseudo-random generator for this band
+    -- Each band has its own independent walk
+    local band_seed = seed + i * 137  -- Prime number for better distribution
+    
+    -- Start each band's walk at middle value (0.5)
+    local value = 0.5
+    
+    -- Simulate the random walk by accumulating steps over frames
+    for frame = 0, f do
+        -- Generate pseudo-random step for this frame and band
+        local rand_seed = band_seed + frame * 1009  -- Another prime
+        local pseudo_rand = (math.sin(rand_seed) * 43758.5453) % 1
+        
+        -- Convert to range [-0.5, 0.5] and scale by step_size
+        local step = (pseudo_rand - 0.5) * step_size
+        
+        -- Apply step and clamp to valid range
+        value = value + step
+        value = math.max(0, math.min(1, value))
+    end
+    
+    return value
+end`;
+  }
+
+  getPulsarTemplate(): string {
+    return `-- Pulsar LUT Generator
+-- Creates a moving peak that sweeps across frequency bands
+-- With configurable bleed to nearby bands
+
+function process()
+    local max_amplitude = 1.0
+    local bleed_amount = 0.3    -- How much the peak bleeds to nearby bands (0-1)
+    local bleed_width = 2       -- How many bands on each side get bleed
+    
+    -- Calculate peak position for current frame (wraps around)
+    local peak_pos = f % i_amt
+    
+    -- Calculate distance from current band to peak position
+    local distance = math.abs(i - peak_pos)
+    
+    -- Handle wrap-around distance (shorter path around the circle)
+    local wrap_distance = i_amt - distance
+    distance = math.min(distance, wrap_distance)
+    
+    -- Calculate amplitude based on distance from peak
+    local value = 0
+    
+    if distance == 0 then
+        -- Direct hit: full amplitude
+        value = max_amplitude
+    elseif distance <= bleed_width then
+        -- Within bleed range: calculate falloff
+        local falloff = 1 - (distance / bleed_width)
+        value = max_amplitude * bleed_amount * falloff
+    else
+        -- Outside bleed range: no signal
+        value = 0
+    end
+    
+    return value
+end`;
+  }
+
   destroy(): void {
     if (this.luaEngine) {
       this.luaEngine.global.close();

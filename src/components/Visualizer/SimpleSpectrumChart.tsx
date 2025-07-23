@@ -222,7 +222,7 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
 
       <div className="dro-simple-controls">
         <button
-          className="dro-play-button"
+          className="dro-play-button btn-primary"
           onClick={() => setIsPlaying(!isPlaying)}
           title={isPlaying ? 'Pause' : 'Play'}
         >
