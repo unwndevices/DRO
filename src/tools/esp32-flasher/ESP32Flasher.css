@@ -2,7 +2,7 @@
 .esp32-flasher-tool {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   padding: 0;
 }
 

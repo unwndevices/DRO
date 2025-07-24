@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { marked } from 'marked';
 import './FirmwareSelector.css';
 
 interface SimpleRelease {
@@ -22,10 +23,10 @@ interface FirmwareSelectorProps {
   disabled?: boolean;
 }
 
-export const FirmwareSelector: React.FC<FirmwareSelectorProps> = ({ 
-  platform, 
-  onFirmwareLoad, 
-  disabled = false 
+export const FirmwareSelector: React.FC<FirmwareSelectorProps> = ({
+  platform,
+  onFirmwareLoad,
+  disabled = false
 }) => {
   const [versions, setVersions] = useState<SimpleRelease[]>([]);
   const [selectedVersion, setSelectedVersion] = useState<string>('');
@@ -33,22 +34,18 @@ export const FirmwareSelector: React.FC<FirmwareSelectorProps> = ({
   const [showChangelog, setShowChangelog] = useState(false);
   const [fetchError, setFetchError] = useState<string>('');
 
-  useEffect(() => {
-    fetchVersions();
-  }, []);
-
   const fetchVersions = useCallback(async () => {
     try {
       setFetchError('');
       // Fetch from unwn_fw repository
       const response = await fetch('https://raw.githubusercontent.com/unwndevices/unwn_fw/main/releases.json');
-      
+
       if (!response.ok) {
         throw new Error(`Failed to fetch releases: ${response.status}`);
       }
-      
+
       const data: ReleaseIndex = await response.json();
-      
+
       setVersions(data.releases);
       setSelectedVersion(data.latest);
     } catch (error) {
@@ -56,6 +53,10 @@ export const FirmwareSelector: React.FC<FirmwareSelectorProps> = ({
       setFetchError(error instanceof Error ? error.message : 'Failed to fetch firmware versions');
     }
   }, []);
+
+  useEffect(() => {
+    fetchVersions();
+  }, [fetchVersions]);
 
   const downloadFirmware = useCallback(async (version: string) => {
     const release = versions.find(v => v.version === version);
@@ -68,9 +69,9 @@ export const FirmwareSelector: React.FC<FirmwareSelectorProps> = ({
     try {
       const url = release.platforms[platform];
       console.log(`Downloading firmware from: ${url}`);
-      
+
       // Try direct fetch first
-      let response = await fetch(url, {
+      const response = await fetch(url, {
         mode: 'cors',
         cache: 'no-cache'
       }).catch(async (e) => {
@@ -78,14 +79,14 @@ export const FirmwareSelector: React.FC<FirmwareSelectorProps> = ({
         // Try with default cache if CORS fails
         return fetch(url);
       });
-      
+
       if (!response.ok) {
         throw new Error(`Download failed: ${response.status} ${response.statusText}`);
       }
-      
+
       const binary = await response.blob();
       console.log(`Downloaded firmware: ${binary.size} bytes`);
-      
+
       onFirmwareLoad(binary, version);
     } catch (error) {
       console.error('Failed to download firmware:', error);
@@ -114,7 +115,7 @@ export const FirmwareSelector: React.FC<FirmwareSelectorProps> = ({
   return (
     <div className="firmware-selector">
       <h3>Firmware Version</h3>
-      
+
       <div className="version-controls">
         <select
           value={selectedVersion}
@@ -129,7 +130,7 @@ export const FirmwareSelector: React.FC<FirmwareSelectorProps> = ({
             </option>
           ))}
         </select>
-        
+
         {selectedRelease && (
           <button
             onClick={() => setShowChangelog(!showChangelog)}
@@ -143,12 +144,11 @@ export const FirmwareSelector: React.FC<FirmwareSelectorProps> = ({
 
       {selectedRelease && showChangelog && (
         <div className="changelog">
-          <h4>Changes in {selectedRelease.version}</h4>
-          <ul>
-            {selectedRelease.changelog.map((change, i) => (
-              <li key={i}>{change}</li>
-            ))}
-          </ul>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: marked.parse(selectedRelease.changelog.join('\n\n')) as string
+            }}
+          />
         </div>
       )}
 

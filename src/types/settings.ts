@@ -26,6 +26,6 @@ export const defaultSettings: Settings = {
         biggerEditor: false,
     },
     theme: {
-        name: 'gruvbox',
+        name: 'rose-pine',
     }
 }; 

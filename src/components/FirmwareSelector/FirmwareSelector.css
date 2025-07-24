@@ -54,7 +54,7 @@
 }
 
 .changelog {
-  margin-bottom: 1rem;
+  margin: 1.5rem 0;
   padding: 1rem;
   background: var(--color-background-tertiary);
   border-radius: var(--border-radius-md);
@@ -79,6 +79,13 @@
   color: var(--color-text-secondary);
   font-size: 0.875rem;
   font-family: var(--font-mono);
+}
+
+.changelog hr {
+  margin: 1.5rem 0;
+  border: none;
+  height: 1px;
+  background: var(--color-border-muted);
 }
 
 .download-button {

@@ -32,13 +32,15 @@ export const LayoutSettings: React.FC = () => {
           </div>
         </div>
         <div className="settings-control-input">
-          <button
-            type="button"
-            className={`settings-toggle ${settings.layout.flipUI ? 'active' : ''}`}
-            onClick={handleFlipUIChange}
-            aria-pressed={settings.layout.flipUI}
-            title={`${settings.layout.flipUI ? 'Disable' : 'Enable'} UI layout flip`}
-          />
+          <label className="toggle">
+            <input
+              type="checkbox"
+              checked={settings.layout.flipUI}
+              onChange={handleFlipUIChange}
+              title={`${settings.layout.flipUI ? 'Disable' : 'Enable'} UI layout flip`}
+            />
+            <span className="toggle-slider"></span>
+          </label>
         </div>
       </div>
 
@@ -50,13 +52,15 @@ export const LayoutSettings: React.FC = () => {
           </div>
         </div>
         <div className="settings-control-input">
-          <button
-            type="button"
-            className={`settings-toggle ${settings.layout.biggerEditor ? 'active' : ''}`}
-            onClick={handleBiggerEditorChange}
-            aria-pressed={settings.layout.biggerEditor}
-            title={`${settings.layout.biggerEditor ? 'Disable' : 'Enable'} bigger editor layout`}
-          />
+          <label className="toggle">
+            <input
+              type="checkbox"
+              checked={settings.layout.biggerEditor}
+              onChange={handleBiggerEditorChange}
+              title={`${settings.layout.biggerEditor ? 'Disable' : 'Enable'} bigger editor layout`}
+            />
+            <span className="toggle-slider"></span>
+          </label>
         </div>
       </div>
     </div>

@@ -15,6 +15,7 @@
   background: rgba(var(--color-background-rgb), 0.95);
   border-top: 1px solid var(--color-border-muted);
   font-family: var(--font-mono);
+  min-height: 42px;
 }
 
 .dro-play-button {
@@ -42,13 +43,13 @@
 .dro-frame-controls {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--spacing-md);
   flex: 1;
 }
 
 .dro-frame-info {
-  color: var(--color-text-secondary);
-  font-size: 11px;
+  color: var(--color-text-muted);
+  font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   min-width: 90px;
