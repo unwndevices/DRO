@@ -1,4 +1,4 @@
-// DRO Data Model Types
+// DROPData Model Types
 
 export interface SpectralFrame {
   bands: number[]; // 20-band spectral data
@@ -95,7 +95,7 @@ export interface LuaAPI {
 }
 
 // Event types
-export type AppEvent = 
+export type AppEvent =
   | { type: 'SCRIPT_EXECUTED'; payload: { datum: Datum; executionTime: number } }
   | { type: 'SCRIPT_ERROR'; payload: { errors: LuaError[] } }
   | { type: 'PLAYBACK_STARTED' }

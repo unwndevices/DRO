@@ -404,12 +404,12 @@ autocompletion({
 
 ```css
 /* Parent container provides border */
-.dro-panel {
+.drop-panel {
   border: 1px solid var(--color-border-muted);
 }
 
 /* Child components should NOT have borders */
-.dro-simple-spectrum-chart {
+.drop-simple-spectrum-chart {
   border: none; /* Prevents double borders */
   border-radius: var(--border-radius-md); /* Maintains styling */
 }
@@ -424,8 +424,8 @@ autocompletion({
 **Pattern**: Aligned control panel styling across components
 
 ```css
-.dro-editor-footer,
-.dro-chart-controls {
+.drop-editor-footer,
+.drop-chart-controls {
   padding: 12px;
   background: rgba(var(--color-background-rgb), 0.95);
   border-top: 1px solid var(--color-border-muted);

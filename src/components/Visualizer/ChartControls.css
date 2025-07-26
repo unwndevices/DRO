@@ -1,4 +1,4 @@
-.dro-chart-controls {
+.drop-chart-controls {
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-md);
@@ -10,19 +10,19 @@
   font-size: 0.75rem;
 }
 
-.dro-control-group {
+.drop-control-group {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
   white-space: nowrap;
 }
 
-.dro-control-group.dro-frame-slider {
+.drop-control-group.drop-frame-slider {
   flex: 1;
   min-width: 200px;
 }
 
-.dro-control-label {
+.drop-control-label {
   color: var(--color-text-secondary);
   font-weight: 500;
   font-size: 0.7rem;
@@ -30,7 +30,7 @@
   letter-spacing: 0.5px;
 }
 
-.dro-select {
+.drop-select {
   background: var(--color-background);
   border: 1px solid var(--color-border-muted);
   color: var(--color-amber);
@@ -42,29 +42,29 @@
   transition: all var(--transition-fast);
 }
 
-.dro-select:focus {
+.drop-select:focus {
   border-color: var(--color-amber);
   box-shadow: 0 0 0 2px rgba(var(--color-glow-rgb), 0.2);
   background: var(--color-background-tertiary);
 }
 
-.dro-select option {
+.drop-select option {
   background: var(--color-background);
   color: var(--color-amber);
 }
 
 /* Use global .btn classes instead of custom button styles */
-.dro-button-primary {
+.drop-button-primary {
   font-size: 0.875rem;
   min-width: 40px;
 }
 
-.dro-button-secondary {
+.drop-button-secondary {
   font-size: 0.7rem;
   min-width: 45px;
 }
 
-.dro-frame-info {
+.drop-frame-info {
   color: var(--color-text-muted);
   font-size: 0.7rem;
   min-width: 60px;
@@ -72,28 +72,28 @@
 }
 
 /* Use global range input styles instead - keeping only specific sizing overrides */
-.dro-slider {
+.drop-slider {
   height: 6px;
 }
 
-.dro-slider::-webkit-slider-thumb {
+.drop-slider::-webkit-slider-thumb {
   border: 2px solid var(--color-background);
 }
 
-.dro-slider::-moz-range-thumb {
+.drop-slider::-moz-range-thumb {
   border: 2px solid var(--color-background);
 }
 
-.dro-frame-slider .dro-slider {
+.drop-frame-slider .drop-slider {
   flex: 1;
   min-width: 150px;
 }
 
-.dro-zoom-slider {
+.drop-zoom-slider {
   width: 80px;
 }
 
-.dro-zoom-value {
+.drop-zoom-value {
   color: var(--color-text-muted);
   font-size: 0.65rem;
   min-width: 30px;
@@ -101,26 +101,26 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .dro-chart-controls {
+  .drop-chart-controls {
     flex-direction: column;
     gap: var(--spacing-md);
     align-items: stretch;
   }
   
-  .dro-control-group {
+  .drop-control-group {
     justify-content: space-between;
   }
   
-  .dro-control-group.dro-frame-slider {
+  .drop-control-group.drop-frame-slider {
     min-width: unset;
   }
   
-  .dro-frame-slider .dro-slider {
+  .drop-frame-slider .drop-slider {
     min-width: 120px;
   }
 }
 
 /* Custom animations for sliders */
-.dro-slider:active::-webkit-slider-thumb {
+.drop-slider:active::-webkit-slider-thumb {
   transform: scale(1.2);
 } 

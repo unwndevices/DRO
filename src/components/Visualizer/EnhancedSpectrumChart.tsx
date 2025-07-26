@@ -22,15 +22,15 @@ export const EnhancedSpectrumChart: React.FC<EnhancedSpectrumChartProps> = ({
   const [chartType, setChartType] = useState<ChartType>('bars');
   const [isPlaying, setIsPlaying] = useState(false);
   const [zoom, setZoom] = useState(1.0);
-  
+
   // Auto-play functionality
   useEffect(() => {
     if (!isPlaying || frames.length === 0) return;
-    
+
     const interval = setInterval(() => {
       onFrameChange((currentFrame + 1) % frames.length);
     }, 50); // 20 FPS playback
-    
+
     return () => clearInterval(interval);
   }, [isPlaying, currentFrame, frames.length, onFrameChange]);
 
@@ -77,7 +77,7 @@ export const EnhancedSpectrumChart: React.FC<EnhancedSpectrumChartProps> = ({
 
     // Draw frequency labels and grid
     drawFrequencyLabels(ctx, rect.width, rect.height);
-    
+
   }, [frames, currentFrame, chartType, zoom]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getFrequencyForBand = (band: number, totalBands: number = 20): number => {
@@ -87,7 +87,7 @@ export const EnhancedSpectrumChart: React.FC<EnhancedSpectrumChartProps> = ({
 
   const drawBarsChart = (ctx: CanvasRenderingContext2D, frames: SpectralFrame[], frameIndex: number, width: number, height: number) => {
     if (frames.length === 0 || frameIndex >= frames.length) return;
-    
+
     const frame = frames[frameIndex];
     if (!frame?.bands) return;
 
@@ -111,7 +111,7 @@ export const EnhancedSpectrumChart: React.FC<EnhancedSpectrumChartProps> = ({
       const gradient = ctx.createLinearGradient(0, y, 0, y + barHeight);
       gradient.addColorStop(0, '#FFBF00');
       gradient.addColorStop(1, '#FF8C00');
-      
+
       ctx.fillStyle = gradient;
       ctx.fillRect(x + 1, y, barWidth - 2, barHeight);
 
@@ -125,7 +125,7 @@ export const EnhancedSpectrumChart: React.FC<EnhancedSpectrumChartProps> = ({
 
   const drawLineChart = (ctx: CanvasRenderingContext2D, frames: SpectralFrame[], frameIndex: number, width: number, height: number) => {
     if (frames.length === 0 || frameIndex >= frames.length) return;
-    
+
     const frame = frames[frameIndex];
     if (!frame?.bands) return;
 
@@ -194,12 +194,12 @@ export const EnhancedSpectrumChart: React.FC<EnhancedSpectrumChartProps> = ({
       bands.forEach((value, bandIndex) => {
         const x = bandIndex * bandWidth;
         const intensity = Math.max(0, Math.min(1, value));
-        
+
         // Color based on intensity
         const red = Math.floor(255 * intensity);
         const green = Math.floor(191 * intensity);
         const blue = 0;
-        
+
         ctx.fillStyle = `rgba(${red}, ${green}, ${blue}, ${alpha})`;
         ctx.fillRect(x, y, bandWidth - 1, frameHeight - 1);
       });
@@ -219,7 +219,7 @@ export const EnhancedSpectrumChart: React.FC<EnhancedSpectrumChartProps> = ({
 
     const visibleFrames = Math.min(20, frames.length);
     const startFrame = Math.max(0, frameIndex - visibleFrames + 1);
-    
+
     // 3D projection parameters
     const perspective = 0.6;
     const tilt = 0.3;
@@ -230,7 +230,7 @@ export const EnhancedSpectrumChart: React.FC<EnhancedSpectrumChartProps> = ({
 
       const bands = frames[actualFrame].bands;
       const frameDepth = f / visibleFrames;
-      
+
       // Create 3D line for this frame
       ctx.strokeStyle = `rgba(255, 191, 0, ${1 - frameDepth * 0.5})`;
       ctx.lineWidth = 2;
@@ -248,7 +248,7 @@ export const EnhancedSpectrumChart: React.FC<EnhancedSpectrumChartProps> = ({
           ctx.lineTo(projectedX, y);
         }
       });
-      
+
       ctx.stroke();
     }
   };
@@ -264,14 +264,14 @@ export const EnhancedSpectrumChart: React.FC<EnhancedSpectrumChartProps> = ({
       const bandIndex = (i / labelCount) * 19; // 0 to 19
       const frequency = getFrequencyForBand(bandIndex);
       const x = (i / labelCount) * width;
-      
+
       let label: string;
       if (frequency >= 1000) {
         label = `${(frequency / 1000).toFixed(1)}k`;
       } else {
         label = `${Math.round(frequency)}`;
       }
-      
+
       ctx.fillText(label, x, height - 5);
     }
 
@@ -309,24 +309,24 @@ export const EnhancedSpectrumChart: React.FC<EnhancedSpectrumChartProps> = ({
       },
       frames
     };
-    
+
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    saveAs(blob, `dro-spectral-data-${Date.now()}.json`);
+    saveAs(blob, `drop-spectral-data-${Date.now()}.json`);
   };
 
   const exportAsCSV = () => {
     if (frames.length === 0) return;
-    
+
     const bandCount = frames[0]?.bands?.length || 20;
     let csv = 'Frame,';
-    
+
     // Header row
     for (let b = 0; b < bandCount; b++) {
       const freq = getFrequencyForBand(b);
       csv += `${freq.toFixed(1)}Hz${b < bandCount - 1 ? ',' : ''}`;
     }
     csv += '\n';
-    
+
     // Data rows
     frames.forEach((frame, index) => {
       csv += `${index},`;
@@ -335,18 +335,18 @@ export const EnhancedSpectrumChart: React.FC<EnhancedSpectrumChartProps> = ({
       }
       csv += '\n';
     });
-    
+
     const blob = new Blob([csv], { type: 'text/csv' });
-    saveAs(blob, `dro-spectral-data-${Date.now()}.csv`);
+    saveAs(blob, `drop-spectral-data-${Date.now()}.csv`);
   };
 
   const exportAsPNG = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
+
     canvas.toBlob((blob) => {
       if (blob) {
-        saveAs(blob, `dro-visualization-${Date.now()}.png`);
+        saveAs(blob, `drop-visualization-${Date.now()}.png`);
       }
     }, 'image/png');
   };
@@ -356,7 +356,7 @@ export const EnhancedSpectrumChart: React.FC<EnhancedSpectrumChartProps> = ({
   const frameCount = frames.length;
 
   return (
-    <div className={`dro-enhanced-spectrum-chart ${className}`}>
+    <div className={`drop-enhanced-spectrum-chart ${className}`}>
       <ChartControls
         chartType={chartType}
         onChartTypeChange={setChartType}
@@ -369,15 +369,15 @@ export const EnhancedSpectrumChart: React.FC<EnhancedSpectrumChartProps> = ({
         zoom={zoom}
         onZoomChange={setZoom}
       />
-      
-      <div className="dro-chart-container">
+
+      <div className="drop-chart-container">
         <canvas
           ref={canvasRef}
-          className="dro-enhanced-chart-canvas"
+          className="drop-enhanced-chart-canvas"
         />
-        
-        <div className="dro-chart-info">
-          <div className="dro-chart-stats">
+
+        <div className="drop-chart-info">
+          <div className="drop-chart-stats">
             <span>Mode: {chartType.toUpperCase()}</span>
             <span>Frame: {currentFrame + 1}/{frameCount}</span>
             <span>Bands: {bandCount}</span>

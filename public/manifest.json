@@ -1,6 +1,6 @@
 {
-  "name": "DRO - Datum Research Observatory",
-  "short_name": "DRO",
+  "name": "DROP - Datum Research Open Platform",
+  "short_name": "DROP",
   "description": "A minimalist Progressive Web App for Lua-based spectral lookup table generation and visualization",
   "start_url": "/",
   "display": "standalone",
@@ -66,14 +66,14 @@
       "sizes": "1280x720",
       "type": "image/png",
       "form_factor": "wide",
-      "label": "DRO Desktop View - Lua IDE with Spectral Visualization"
+      "label": "DROP Desktop View - Lua IDE with Spectral Visualization"
     },
     {
       "src": "/screenshots/mobile.png",
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "DRO Mobile View - Responsive Lua Development"
+      "label": "DROP Mobile View - Responsive Lua Development"
     }
   ],
   "shortcuts": [
@@ -94,4 +94,4 @@
   ],
   "related_applications": [],
   "prefer_related_applications": false
-} 
+}

@@ -1,4 +1,4 @@
-.dro-code-editor {
+.drop-code-editor {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -7,18 +7,18 @@
   overflow: hidden; /* Important for flexbox children */
 }
 
-.dro-editor-container {
+.drop-editor-container {
   flex: 1;
   position: relative;
   overflow-y: auto; /* Allow editor to scroll */
 }
 
-.dro-codemirror-instance {
+.drop-codemirror-instance {
   height: 100%;
 }
 
 /* Error display styling - using global .alert-error class with customizations */
-.dro-editor-errors {
+.drop-editor-errors {
   max-height: 120px;
   overflow-y: auto;
   flex-shrink: 0;
@@ -30,7 +30,7 @@
   border-radius: 0;
 }
 
-.dro-editor-error {
+.drop-editor-error {
   padding: var(--spacing-xs) var(--spacing-sm);
   font-size: 0.75rem;
   color: var(--color-error);
@@ -38,22 +38,22 @@
   border-bottom: 1px solid rgba(var(--color-error-rgb), 0.2);
 }
 
-.dro-editor-error:last-child {
+.drop-editor-error:last-child {
   border-bottom: none;
 }
 
-.dro-error-line {
+.drop-error-line {
   color: var(--color-warning);
   margin-right: var(--spacing-sm);
   font-weight: 500;
 }
 
-.dro-error-message {
+.drop-error-message {
   color: var(--color-error);
 }
 
 /* Footer */
-.dro-editor-footer {
+.drop-editor-footer {
   background: rgba(var(--color-background-rgb), 0.95);
   border-top: 1px solid var(--color-border-muted);
   padding: 12px;
@@ -67,7 +67,7 @@
   min-height: 42px;
 }
 
-.dro-editor-info {
+.drop-editor-info {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
@@ -78,79 +78,120 @@
   flex: 1;
 }
 
-.dro-frame-count-control {
+.drop-frame-count-control {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
 }
 
-.dro-frame-count-control label {
+.drop-frame-count-control label {
   color: var(--color-text-secondary);
   min-width: 60px;
 }
 
-.dro-frame-count-control input {
+.drop-frame-count-control input {
   /* Use global input styles with custom width */
-  width: 60px;
+  width: 80px; /* Increased width to accommodate spinner */
   color: var(--color-text-primary);
   font-size: 0.75rem;
 }
 
+/* Controls row layout for canvas size inputs */
+.drop-controls-row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.drop-canvas-size-control {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.drop-canvas-size-control label {
+  color: var(--color-text-secondary);
+  min-width: 60px;
+}
+
+.drop-canvas-size-control input {
+  /* Use global input styles with custom width */
+  width: 80px;
+  color: var(--color-text-primary);
+  font-size: 0.75rem;
+}
+
+/* Button group styles */
+.drop-editor-buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
 /* Use global .btn .btn-primary class instead of custom execute button */
-.dro-execute-button {
+.drop-execute-button,
+.drop-clear-button,
+.drop-export-button {
   min-width: 50px;
   padding: var(--spacing-sm) var(--spacing-md);
   font-size: 0.875rem;
 }
 
 /* Syntax Highlighting Simulation */
-.dro-editor-textarea {
+.drop-editor-textarea {
   /* Lua keywords will be handled by CodeMirror later */
 }
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
-  .dro-editor-textarea {
+  .drop-editor-textarea {
     font-size: 12px;
     padding-left: 45px;
   }
   
-  .dro-editor-gutter {
+  .drop-editor-gutter {
     width: 40px;
     font-size: 10px;
     padding: 12px 4px;
   }
   
-  .dro-editor-footer {
+  .drop-editor-footer {
     padding: var(--spacing-sm);
     gap: var(--spacing-md);
     flex-direction: column;
     align-items: stretch;
   }
   
-  .dro-editor-info {
+  .drop-editor-info {
     justify-content: center;
     flex-wrap: wrap;
     gap: var(--spacing-md);
   }
   
-  .dro-execute-button {
+  .drop-editor-buttons {
     align-self: center;
-    min-width: 80px;
+    gap: var(--spacing-sm);
   }
   
-  .dro-frame-count-control label {
+  .drop-execute-button,
+  .drop-clear-button,
+  .drop-export-button {
+    min-width: 60px;
+  }
+  
+  .drop-frame-count-control label {
     min-width: 50px;
     font-size: 0.65rem;
   }
 }
 
 /* Focus States */
-.dro-code-editor:focus-within .dro-editor-gutter {
+.drop-code-editor:focus-within .drop-editor-gutter {
   border-right-color: var(--color-amber);
   background: rgba(var(--color-glow-rgb), 0.05);
 }
 
-.dro-code-editor:focus-within .dro-editor-line-number {
+.drop-code-editor:focus-within .drop-editor-line-number {
   color: var(--color-text-muted);
 } 

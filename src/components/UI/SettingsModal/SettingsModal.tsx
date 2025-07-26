@@ -44,7 +44,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
 
   const handleReset = () => {
     resetSettings();
-    console.log('DRO: Settings reset to defaults');
+    console.log('DROP: Settings reset to defaults');
   };
 
   return (
@@ -52,7 +52,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
       <div className="modal settings-modal" role="dialog" aria-labelledby="settings-title" aria-modal="true">
         <div className="modal-header">
           <h2 id="settings-title" className="modal-title">
-            DRO SETTINGS
+            DROP SETTINGS
           </h2>
           <button 
             className="settings-modal-close btn btn-ghost" 

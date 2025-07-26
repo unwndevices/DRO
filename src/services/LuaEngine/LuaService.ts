@@ -25,9 +25,9 @@ export class LuaService {
       const factory = new LuaFactory();
       this.luaEngine = await factory.createEngine();
       this.isInitialized = true;
-      console.log('DRO: Lua engine initialized successfully');
+      console.log('DROP: Lua engine initialized successfully');
     } catch (error) {
-      console.error('DRO: Failed to initialize Lua engine:', error);
+      console.error('DROP: Failed to initialize Lua engine:', error);
       throw error;
     }
   }
@@ -311,12 +311,12 @@ export class LuaService {
     }
 
     // Pre-execution linting validation
-    console.log('DRO: Running pre-execution validation...');
+    console.log('DROP: Running pre-execution validation...');
     const lintDiagnostics = this.validateLuaCode(code);
     const errors = lintDiagnostics.filter(d => d.severity === 'error');
 
     if (errors.length > 0) {
-      console.log('DRO: Validation failed with', errors.length, 'errors');
+      console.log('DROP: Validation failed with', errors.length, 'errors');
       return {
         success: false,
         errors: errors.map(err => ({
@@ -331,7 +331,7 @@ export class LuaService {
     // Log warnings but continue execution
     const warnings = lintDiagnostics.filter(d => d.severity === 'warning');
     if (warnings.length > 0) {
-      console.warn('DRO: Code has', warnings.length, 'warnings:', warnings.map(w => `Line ${w.line}: ${w.message}`));
+      console.warn('DROP: Code has', warnings.length, 'warnings:', warnings.map(w => `Line ${w.line}: ${w.message}`));
     }
 
     try {
@@ -339,7 +339,7 @@ export class LuaService {
       this.luaEngine.global.set('i_amt', bandCount);
       this.luaEngine.global.set('f_amt', frameCount);
 
-      console.log('DRO: Set global variables - i_amt:', bandCount, 'f_amt:', frameCount);
+      console.log('DROP: Set global variables - i_amt:', bandCount, 'f_amt:', frameCount);
 
       // Inject standard math functions for convenience
       this.luaEngine.doString(`
@@ -369,15 +369,23 @@ export class LuaService {
           if value > maxVal then return maxVal end
           return value
         end
+        
+        -- Debug function to check global variables
+        function debug_globals()
+          print("DEBUG: f=" .. tostring(f) .. " (type: " .. type(f) .. ")")
+          print("DEBUG: i=" .. tostring(i) .. " (type: " .. type(i) .. ")")
+          print("DEBUG: f_amt=" .. tostring(f_amt) .. " (type: " .. type(f_amt) .. ")")
+          print("DEBUG: i_amt=" .. tostring(i_amt) .. " (type: " .. type(i_amt) .. ")")
+        end
       `);
 
       // Execute user code (this should define a process function)
-      console.log('DRO: Executing user code...');
+      console.log('DROP: Executing user code...');
       this.luaEngine.doString(code);
 
       // Get the process function
       const processFunction = this.luaEngine.global.get('process');
-      console.log('DRO: Process function found:', typeof processFunction);
+      console.log('DROP: Process function found:', typeof processFunction);
 
       if (typeof processFunction !== 'function') {
         return {
@@ -394,17 +402,24 @@ export class LuaService {
       // Execute the shader-like processing
       const frames: SpectralFrame[] = [];
 
-      console.log('DRO: Starting Lua execution with', frameCount, 'frames and', bandCount, 'bands');
+      console.log('DROP: Starting Lua execution with', frameCount, 'frames and', bandCount, 'bands');
 
       // Set the constant globals once
       this.luaEngine.global.set('i_amt', bandCount);
       this.luaEngine.global.set('f_amt', frameCount);
 
-      console.log(`DRO: Set globals - i_amt: ${bandCount}, f_amt: ${frameCount}`);
+      console.log(`DROP: Set globals - i_amt: ${bandCount}, f_amt: ${frameCount}`);
 
       for (let f = 0; f < frameCount; f++) {
         // Set current frame global
         this.luaEngine.global.set('f', f);
+        
+        // Debug: Verify the global was set correctly
+        const verifyF = this.luaEngine.global.get('f');
+        if (verifyF !== f) {
+          console.error(`DROP: Global variable mismatch! Set f to ${f}, but got ${verifyF}`);
+        }
+        
         const bands: number[] = [];
 
         for (let i = 0; i < bandCount; i++) {
@@ -417,7 +432,7 @@ export class LuaService {
 
             // Debug just a few key points to verify fix
             if ((f === 0 && i < 2) || (f === 1 && i < 2) || (f >= 20 && i === 0)) {
-              console.log(`DRO: Band ${i} frame ${f} result:`, result, typeof result);
+              console.log(`DROP: Band ${i} frame ${f} result:`, result, typeof result);
             }
 
             // Ensure result is a number and clamp to valid range
@@ -425,14 +440,14 @@ export class LuaService {
             if (typeof result === 'number' && !isNaN(result)) {
               value = Math.max(0, Math.min(1, result));
             } else {
-              console.warn(`DRO: Invalid result for band ${i} frame ${f}:`, result, typeof result);
+              console.warn(`DROP: Invalid result for band ${i} frame ${f}:`, result, typeof result);
               value = 0;
             }
 
             bands.push(value);
           } catch (bandError) {
             // If band processing fails, use 0 (not 0.5!)
-            console.error(`DRO: Error processing band ${i} in frame ${f}:`, bandError);
+            console.error(`DROP: Error processing band ${i} in frame ${f}:`, bandError);
             bands.push(0);
           }
         }
@@ -447,8 +462,8 @@ export class LuaService {
       // Debug final results
       const firstFrame = frames[0];
       const lastFrame = frames[frames.length - 1];
-      console.log('DRO: First frame bands:', firstFrame.bands.slice(0, 5));
-      console.log('DRO: Last frame bands:', lastFrame.bands.slice(0, 5));
+      console.log('DROP: First frame bands:', firstFrame.bands.slice(0, 5));
+      console.log('DROP: Last frame bands:', lastFrame.bands.slice(0, 5));
 
       const datum: Datum = {
         frames,
@@ -461,8 +476,8 @@ export class LuaService {
 
       const executionTime = performance.now() - startTime;
 
-      console.log(`DRO: Lua execution completed in ${executionTime.toFixed(2)}ms`);
-      console.log(`DRO: Generated ${frameCount} frames with ${bandCount} bands each`);
+      console.log(`DROP: Lua execution completed in ${executionTime.toFixed(2)}ms`);
+      console.log(`DROP: Generated ${frameCount} frames with ${bandCount} bands each`);
 
       return {
         success: true,
@@ -489,7 +504,7 @@ export class LuaService {
         };
       }
 
-      console.error('DRO: Lua execution error:', error);
+      console.error('DROP: Lua execution error:', error);
 
       return {
         success: false,
@@ -500,7 +515,7 @@ export class LuaService {
   }
 
   getDefaultTemplate(): string {
-    return `-- DRO Lua Spectral Processor
+    return `-- DROP Lua Spectral Processor
 -- This code runs for each band (i) in each frame (f)
 -- Available globals: i (band index), f (frame), i_amt (20), f_amt (32)
 
@@ -668,7 +683,7 @@ end`;
       this.luaEngine = null;
     }
     this.isInitialized = false;
-    console.log('DRO: Lua engine destroyed');
+    console.log('DROP: Lua engine destroyed');
   }
 }
 

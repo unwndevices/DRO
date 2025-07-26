@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DRO - Datum Research Observatory</title>
+    <title>DROP - Datum Research Open Platform</title>
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
@@ -13,8 +13,8 @@
     <meta name="theme-color" content="#C7EE1B" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="DRO" />
-    <meta name="application-name" content="DRO" />
+    <meta name="apple-mobile-web-app-title" content="DROP" />
+    <meta name="application-name" content="DROP" />
     <meta name="msapplication-TileColor" content="#181818" />
     <meta name="msapplication-config" content="/browserconfig.xml" />
     
@@ -29,7 +29,7 @@
       // Apply theme colors immediately before React loads to prevent flash
       (function() {
         try {
-          const savedSettings = localStorage.getItem('dro-settings');
+          const savedSettings = localStorage.getItem('drop-settings');
           if (savedSettings) {
             const settings = JSON.parse(savedSettings);
             const accentColor = settings.theme?.accentColor || '#C7EE1B';

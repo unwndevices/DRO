@@ -29,22 +29,22 @@ class PWAService {
 
     // Initialize PWA service
     async initialize(): Promise<void> {
-        console.log('DRO PWA: Initializing PWA service');
+        console.log('DROP PWA: Initializing PWA service');
 
         if ('serviceWorker' in navigator) {
             try {
                 // Only register in production or when explicitly enabled
                 if (import.meta.env.PROD) {
                     await this.registerServiceWorker();
-                    console.log('DRO PWA: Service worker registered successfully');
+                    console.log('DROP PWA: Service worker registered successfully');
                 } else {
-                    console.log('DRO PWA: Service worker disabled in development');
+                    console.log('DROP PWA: Service worker disabled in development');
                 }
             } catch (error) {
-                console.error('DRO PWA: Service worker registration failed:', error);
+                console.error('DROP PWA: Service worker registration failed:', error);
             }
         } else {
-            console.warn('DRO PWA: Service workers not supported');
+            console.warn('DROP PWA: Service workers not supported');
         }
     }
 
@@ -59,23 +59,23 @@ class PWAService {
                 type: import.meta.env.DEV ? 'module' : 'classic'
             });
 
-            console.log('DRO PWA: Service worker registered with scope:', this.registration.scope);
+            console.log('DROP PWA: Service worker registered with scope:', this.registration.scope);
 
             // Listen for updates
             this.registration.addEventListener('updatefound', () => {
-                console.log('DRO PWA: Service worker update found');
+                console.log('DROP PWA: Service worker update found');
                 this.handleServiceWorkerUpdate();
             });
 
             // Check for existing updates
             if (this.registration.waiting) {
-                console.log('DRO PWA: Service worker update waiting');
+                console.log('DROP PWA: Service worker update waiting');
                 this.status.updateAvailable = true;
                 this.notifyStatusChange();
             }
 
         } catch (error) {
-            console.error('DRO PWA: Service worker registration failed:', error);
+            console.error('DROP PWA: Service worker registration failed:', error);
             throw error;
         }
     }
@@ -89,7 +89,7 @@ class PWAService {
 
         newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                console.log('DRO PWA: New service worker installed, update available');
+                console.log('DROP PWA: New service worker installed, update available');
                 this.status.updateAvailable = true;
                 this.notifyStatusChange();
             }
@@ -101,7 +101,7 @@ class PWAService {
         // Install prompt event
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
-            console.log('DRO PWA: Install prompt available');
+            console.log('DROP PWA: Install prompt available');
             this.installPrompt = e as any;
             this.status.canInstall = true;
             this.notifyStatusChange();
@@ -109,7 +109,7 @@ class PWAService {
 
         // App installed event
         window.addEventListener('appinstalled', () => {
-            console.log('DRO PWA: App installed successfully');
+            console.log('DROP PWA: App installed successfully');
             this.installPrompt = null;
             this.status.isInstalled = true;
             this.status.canInstall = false;
@@ -118,20 +118,20 @@ class PWAService {
 
         // Online/offline events
         window.addEventListener('online', () => {
-            console.log('DRO PWA: App came online');
+            console.log('DROP PWA: App came online');
             this.status.isOnline = true;
             this.notifyStatusChange();
         });
 
         window.addEventListener('offline', () => {
-            console.log('DRO PWA: App went offline');
+            console.log('DROP PWA: App went offline');
             this.status.isOnline = false;
             this.notifyStatusChange();
         });
 
         // Service worker controller change
         navigator.serviceWorker?.addEventListener('controllerchange', () => {
-            console.log('DRO PWA: Service worker controller changed, reloading');
+            console.log('DROP PWA: Service worker controller changed, reloading');
             window.location.reload();
         });
     }
@@ -149,23 +149,23 @@ class PWAService {
         this.status.isInstalled = isStandalone || isFullscreen || isMinimalUI || isIOSPWA;
 
         if (this.status.isInstalled) {
-            console.log('DRO PWA: App is running as installed PWA');
+            console.log('DROP PWA: App is running as installed PWA');
         }
     }
 
     // Trigger install prompt
     async showInstallPrompt(): Promise<{ outcome: 'accepted' | 'dismissed' } | null> {
         if (!this.installPrompt) {
-            console.warn('DRO PWA: Install prompt not available');
+            console.warn('DROP PWA: Install prompt not available');
             return null;
         }
 
         try {
-            console.log('DRO PWA: Showing install prompt');
+            console.log('DROP PWA: Showing install prompt');
             await this.installPrompt.prompt();
             const result = await this.installPrompt.userChoice;
 
-            console.log('DRO PWA: Install prompt result:', result.outcome);
+            console.log('DROP PWA: Install prompt result:', result.outcome);
 
             if (result.outcome === 'accepted') {
                 this.installPrompt = null;
@@ -175,7 +175,7 @@ class PWAService {
 
             return result;
         } catch (error) {
-            console.error('DRO PWA: Install prompt failed:', error);
+            console.error('DROP PWA: Install prompt failed:', error);
             return null;
         }
     }
@@ -183,11 +183,11 @@ class PWAService {
     // Update service worker
     async updateServiceWorker(): Promise<void> {
         if (!this.registration || !this.registration.waiting) {
-            console.warn('DRO PWA: No service worker update available');
+            console.warn('DROP PWA: No service worker update available');
             return;
         }
 
-        console.log('DRO PWA: Updating service worker');
+        console.log('DROP PWA: Updating service worker');
 
         // Send skip waiting message
         this.registration.waiting.postMessage({ type: 'SKIP_WAITING' });
@@ -199,7 +199,7 @@ class PWAService {
         // Wait for controller change before resolving
         return new Promise((resolve) => {
             const handleControllerChange = () => {
-                console.log('DRO PWA: Service worker updated, controller changed');
+                console.log('DROP PWA: Service worker updated, controller changed');
                 navigator.serviceWorker?.removeEventListener('controllerchange', handleControllerChange);
                 resolve();
             };
@@ -238,7 +238,7 @@ class PWAService {
             try {
                 callback(this.status);
             } catch (error) {
-                console.error('DRO PWA: Status callback error:', error);
+                console.error('DROP PWA: Status callback error:', error);
             }
         });
     }
@@ -246,21 +246,21 @@ class PWAService {
     // Clear all caches
     async clearCaches(): Promise<void> {
         if (!this.registration || !this.registration.active) {
-            console.warn('DRO PWA: No active service worker registration');
+            console.warn('DROP PWA: No active service worker registration');
             return;
         }
 
-        console.log('DRO PWA: Clearing all caches');
+        console.log('DROP PWA: Clearing all caches');
 
         return new Promise((resolve, reject) => {
             const messageChannel = new MessageChannel();
 
             messageChannel.port1.onmessage = (event) => {
                 if (event.data.success) {
-                    console.log('DRO PWA: Caches cleared successfully');
+                    console.log('DROP PWA: Caches cleared successfully');
                     resolve();
                 } else {
-                    console.error('DRO PWA: Failed to clear caches:', event.data.error);
+                    console.error('DROP PWA: Failed to clear caches:', event.data.error);
                     reject(new Error(event.data.error));
                 }
             };
@@ -283,7 +283,7 @@ class PWAService {
                     quota: estimate.quota || 0
                 };
             } catch (error) {
-                console.error('DRO PWA: Failed to get cache usage:', error);
+                console.error('DROP PWA: Failed to get cache usage:', error);
             }
         }
         return null;

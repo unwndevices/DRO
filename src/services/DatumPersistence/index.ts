@@ -1,4 +1,4 @@
-// DRO Datum Persistence Service exports
+// DROP Datum Persistence Service exports
 
 export { DatumBinaryFormat } from './DatumBinaryFormat';
 export { DatumFileService } from './DatumFileService';

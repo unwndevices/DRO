@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-DRO (Datum Research Observatory) is a Progressive Web App that provides a Lua-based spectral lookup table generation and visualization tool. It allows users to write Lua scripts that generate spectral data across 20 frequency bands and multiple time frames.
+DROP (Datum Research Open Platform) is a Progressive Web App that provides a Lua-based spectral lookup table generation and visualization tool. It allows users to write Lua scripts that generate spectral data across 20 frequency bands and multiple time frames.
 
 ## Common Development Commands
 
@@ -30,6 +30,7 @@ npm run preview
 ### Core Services
 
 1. **LuaService** (`src/services/LuaEngine/LuaService.ts`)
+
    - Manages WebAssembly-based Lua runtime (wasmoon)
    - Provides code validation, linting, and execution
    - Injects global variables: `i` (frame index), `f` (frequency index), `i_amt` (total frames), `f_amt` (20 bands)
@@ -65,10 +66,11 @@ npm run preview
 ### Build Configuration
 
 The project uses Vite with special configurations:
+
 - TypeScript strict mode enabled
 - Code splitting for vendor, CodeMirror, and wasmoon chunks
 - PWA plugin for service worker generation
-- GitHub Pages deployment requires base path `/DRO/`
+- GitHub Pages deployment requires base path `/DROP/`
 
 ### Development Guidelines
 

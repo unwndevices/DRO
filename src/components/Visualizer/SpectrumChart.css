@@ -1,4 +1,4 @@
-.dro-spectrum-chart {
+.drop-spectrum-chart {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -6,7 +6,7 @@
   position: relative;
 }
 
-.dro-chart-canvas {
+.drop-chart-canvas {
   flex: 1;
   width: 100%;
   height: 100%;
@@ -14,14 +14,14 @@
   background: var(--color-background);
 }
 
-.dro-chart-info {
+.drop-chart-info {
   background: var(--color-background-secondary);
   border-top: 1px solid var(--color-border-muted);
   padding: 6px 12px;
   flex-shrink: 0;
 }
 
-.dro-chart-stats {
+.drop-chart-stats {
   display: flex;
   gap: 16px;
   align-items: center;
@@ -30,7 +30,7 @@
   font-family: 'Fira Mono', monospace;
 }
 
-.dro-chart-stats span {
+.drop-chart-stats span {
   display: flex;
   align-items: center;
   padding: 2px 6px;
@@ -39,13 +39,13 @@
   border-radius: 2px;
 }
 
-.dro-chart-stats span:first-child {
+.drop-chart-stats span:first-child {
   color: var(--color-amber);
   font-weight: 500;
 }
 
 /* Canvas rendering improvements */
-.dro-chart-canvas {
+.drop-chart-canvas {
   image-rendering: pixelated;
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
@@ -53,33 +53,33 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .dro-chart-stats {
+  .drop-chart-stats {
     flex-direction: column;
     gap: 4px;
     align-items: stretch;
   }
   
-  .dro-chart-stats span {
+  .drop-chart-stats span {
     text-align: center;
     font-size: 10px;
   }
   
-  .dro-chart-info {
+  .drop-chart-info {
     padding: 4px 8px;
   }
 }
 
 /* Loading state */
-.dro-spectrum-chart.loading {
+.drop-spectrum-chart.loading {
   opacity: 0.6;
 }
 
-.dro-spectrum-chart.loading .dro-chart-canvas {
+.drop-spectrum-chart.loading .drop-chart-canvas {
   cursor: wait;
 }
 
 /* Empty state */
-.dro-spectrum-chart.empty::before {
+.drop-spectrum-chart.empty::before {
   content: "No data to display\AExecute a Lua script to generate spectral data";
   position: absolute;
   top: 50%;
@@ -96,6 +96,6 @@
 }
 
 /* Hover effects */
-.dro-chart-canvas:hover {
+.drop-chart-canvas:hover {
   background: var(--color-background-tertiary);
 } 

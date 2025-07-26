@@ -57,19 +57,19 @@ export const PWAStatus: React.FC = () => {
     try {
       setIsUpdating(true);
       setShowUpdatePrompt(false);
-      console.log('DRO PWA: Starting update process');
+      console.log('DROP PWA: Starting update process');
       
       await pwaService.updateServiceWorker();
       
       // The service worker will handle the reload via controllerchange event
       // If it doesn't happen within 3 seconds, force reload
       setTimeout(() => {
-        console.log('DRO PWA: Forcing reload as fallback');
+        console.log('DROP PWA: Forcing reload as fallback');
         window.location.reload();
       }, 3000);
       
     } catch (error) {
-      console.error('DRO PWA: Failed to update service worker:', error);
+      console.error('DROP PWA: Failed to update service worker:', error);
       setIsUpdating(false);
       setShowUpdatePrompt(false);
     }
@@ -104,10 +104,10 @@ export const PWAStatus: React.FC = () => {
           <div className="pwa-prompt-content">
             <div className="pwa-prompt-header">
               <span className="pwa-prompt-icon">📱</span>
-              <span className="pwa-prompt-title">Install DRO</span>
+              <span className="pwa-prompt-title">Install DROP</span>
             </div>
             <div className="pwa-prompt-description">
-              Install DRO as an app for faster access and offline use
+              Install DROP as an app for faster access and offline use
             </div>
             <div className="pwa-prompt-actions">
               <button 
@@ -136,7 +136,7 @@ export const PWAStatus: React.FC = () => {
               <span className="pwa-prompt-title">Update Available</span>
             </div>
             <div className="pwa-prompt-description">
-              A new version of DRO is available. Update now for the latest features.
+              A new version of DROP is available. Update now for the latest features.
             </div>
             <div className="pwa-prompt-actions">
               <button 

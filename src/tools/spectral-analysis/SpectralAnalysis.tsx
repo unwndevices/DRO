@@ -58,8 +58,30 @@ const templates: Template[] = [
 export const SpectralAnalysis: React.FC = () => {
   const [scriptContent, setScriptContent] = useState('');
   const [spectralData, setSpectralData] = useState<Datum | null>(null);
-  const [currentFrame, setCurrentFrame] = useState(0);
-  const [frameCount, setFrameCount] = useState(128);
+  const [currentFrame, setCurrentFrame] = useState(() => {
+    try {
+      const saved = localStorage.getItem('drop-spectral-settings');
+      if (saved) {
+        const settings = JSON.parse(saved);
+        return settings.currentFrame || 0;
+      }
+    } catch (error) {
+      console.warn('DROP: Failed to load saved settings:', error);
+    }
+    return 0;
+  });
+  const [frameCount, setFrameCount] = useState(() => {
+    try {
+      const saved = localStorage.getItem('drop-spectral-settings');
+      if (saved) {
+        const settings = JSON.parse(saved);
+        return settings.frameCount || 128;
+      }
+    } catch (error) {
+      console.warn('DROP: Failed to load saved settings:', error);
+    }
+    return 128;
+  });
   const [errors, setErrors] = useState<Array<{ message: string; line?: number }>>([]);
   const [isExecuting, setIsExecuting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -70,34 +92,72 @@ export const SpectralAnalysis: React.FC = () => {
 
     try {
       const result = await luaService.executeScript(code, frameCount);
-      
+
       if (result.success && result.datum) {
         setSpectralData(result.datum);
         setCurrentFrame(0);
-        
-        console.log(`DRO: Lua execution successful in ${result.executionTime.toFixed(2)}ms`);
+
+        console.log(`DROP: Lua execution successful in ${result.executionTime.toFixed(2)}ms`);
       } else if (result.errors) {
         setErrors(result.errors);
-        console.error('DRO: Lua execution failed:', result.errors);
+        console.error('DROP: Lua execution failed:', result.errors);
       }
-      
+
     } catch (error) {
       setErrors([{
         message: error instanceof Error ? error.message : 'Unknown execution error',
         line: 1,
       }]);
-      console.error('DRO: Execution error:', error);
+      console.error('DROP: Execution error:', error);
     } finally {
       setIsExecuting(false);
     }
   }, [frameCount]);
 
-  // Initialize with default template and execute it
+  // Initialize with saved script or default template
   useEffect(() => {
+    // Try to load saved script first
+    try {
+      const saved = localStorage.getItem('drop-script');
+      if (saved) {
+        const scriptData = JSON.parse(saved);
+        if (scriptData.content) {
+          setScriptContent(scriptData.content);
+          executeLuaScript(scriptData.content);
+          console.log('DROP: Auto-loaded saved script from localStorage');
+          return;
+        }
+      }
+    } catch (error) {
+      console.warn('DROP: Failed to load saved script:', error);
+    }
+
+    // Fall back to default template if no saved script
     const defaultScript = templates[0].getCode();
     setScriptContent(defaultScript);
     executeLuaScript(defaultScript);
   }, [executeLuaScript]);
+
+  // Auto-save script content whenever it changes
+  useEffect(() => {
+    if (scriptContent) {
+      const scriptData = {
+        content: scriptContent,
+        timestamp: new Date().toISOString()
+      };
+      localStorage.setItem('drop-script', JSON.stringify(scriptData));
+    }
+  }, [scriptContent]);
+
+  // Auto-save settings whenever they change
+  useEffect(() => {
+    const settings = {
+      currentFrame,
+      frameCount,
+      timestamp: new Date().toISOString()
+    };
+    localStorage.setItem('drop-spectral-settings', JSON.stringify(settings));
+  }, [currentFrame, frameCount]);
 
   const handleTemplateSelect = useCallback((templateName: string) => {
     const template = templates.find(t => t.name === templateName);
@@ -113,47 +173,47 @@ export const SpectralAnalysis: React.FC = () => {
       content: scriptContent,
       timestamp: new Date().toISOString()
     };
-    localStorage.setItem('dro-script', JSON.stringify(scriptData));
-    console.log('DRO: Script saved to localStorage');
+    localStorage.setItem('drop-script', JSON.stringify(scriptData));
+    console.log('DROP: Script saved to localStorage');
   }, [scriptContent]);
 
   const handleLoad = useCallback(() => {
     try {
-      const saved = localStorage.getItem('dro-script');
+      const saved = localStorage.getItem('drop-script');
       if (saved) {
         const scriptData = JSON.parse(saved);
         setScriptContent(scriptData.content || '');
-        console.log('DRO: Script loaded from localStorage');
+        console.log('DROP: Script loaded from localStorage');
       }
     } catch (error) {
-      console.error('DRO: Error loading script:', error);
+      console.error('DROP: Error loading script:', error);
     }
   }, []);
 
   const handleExportDatum = useCallback(async () => {
     if (isExporting || !spectralData) return;
-    
+
     setIsExporting(true);
     setErrors([]);
-    
+
     try {
       const result = await DatumFileService.exportDatum(spectralData);
-      
+
       if (result.success) {
-        console.log('DRO: Datum exported successfully:', result.filename);
+        console.log('DROP: Datum exported successfully:', result.filename);
       } else if (result.error) {
         setErrors([{
           message: `Export failed: ${result.error}`,
           line: 1
         }]);
-        console.error('DRO: Export failed:', result.error);
+        console.error('DROP: Export failed:', result.error);
       }
     } catch (error) {
       setErrors([{
         message: `Export error: ${error instanceof Error ? error.message : 'Unknown error'}`,
         line: 1
       }]);
-      console.error('DRO: Export error:', error);
+      console.error('DROP: Export error:', error);
     } finally {
       setIsExporting(false);
     }
@@ -164,7 +224,7 @@ export const SpectralAnalysis: React.FC = () => {
       <div className="spectral-tool-header">
         <div className="template-selector">
           <label>Templates:</label>
-          <select 
+          <select
             onChange={(e) => handleTemplateSelect(e.target.value)}
             className="template-dropdown"
           >
@@ -175,7 +235,7 @@ export const SpectralAnalysis: React.FC = () => {
             ))}
           </select>
         </div>
-        
+
         <div className="tool-actions">
           <button onClick={handleSave} className="tool-button btn-secondary">
             Save Script
@@ -184,8 +244,8 @@ export const SpectralAnalysis: React.FC = () => {
             Load Script
           </button>
           <div className="tool-actions-separator"></div>
-          <button 
-            onClick={handleExportDatum} 
+          <button
+            onClick={handleExportDatum}
             className="tool-button btn-primary"
             disabled={isExporting || !spectralData}
           >
@@ -221,7 +281,7 @@ export const SpectralAnalysis: React.FC = () => {
           }
         />
       </MainContent>
-      
+
       <div className="tool-status">
         <div className="status-left">
           <div className="status-item">

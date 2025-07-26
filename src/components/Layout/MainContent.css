@@ -1,4 +1,4 @@
-.dro-main-content {
+.drop-main-content {
   flex: 1;
   display: flex;
   overflow: hidden;
@@ -6,7 +6,7 @@
 }
 
 /* Split Layout */
-.dro-split-layout {
+.drop-split-layout {
   display: flex;
   width: 100%;
   height: 100%;
@@ -14,7 +14,7 @@
   transition: all var(--transition-fast);
 }
 
-.dro-split-left {
+.drop-split-left {
   flex: 1;
   min-width: 300px;
   display: flex;
@@ -23,7 +23,7 @@
   transition: flex var(--transition-fast);
 }
 
-.dro-split-divider {
+.drop-split-divider {
   width: 1px;
   background: var(--color-amber);
   flex-shrink: 0;
@@ -31,12 +31,12 @@
   transition: background-color var(--transition-fast);
 }
 
-.dro-split-divider:hover {
+.drop-split-divider:hover {
   background: var(--color-amber-light);
   box-shadow: var(--shadow-glow);
 }
 
-.dro-split-right {
+.drop-split-right {
   flex: 1;
   min-width: 300px;
   display: flex;
@@ -46,44 +46,44 @@
 }
 
 /* Layout Variants */
-.dro-split-layout.normal-split .dro-split-left {
+.drop-split-layout.normal-split .drop-split-left {
   flex: 1;
 }
 
-.dro-split-layout.normal-split .dro-split-right {
+.drop-split-layout.normal-split .drop-split-right {
   flex: 1;
 }
 
 /* Bigger editor mode - applies to whichever panel contains the editor */
-.dro-split-layout.bigger-editor .dro-split-left {
+.drop-split-layout.bigger-editor .drop-split-left {
   flex: 1; /* Default size for non-editor panel */
 }
 
-.dro-split-layout.bigger-editor .dro-split-right {
+.drop-split-layout.bigger-editor .drop-split-right {
   flex: 1; /* Default size for non-editor panel */
 }
 
 /* When bigger-editor is enabled, the panel with editor-panel class gets 70% width */
-.dro-split-layout.bigger-editor .editor-panel {
+.drop-split-layout.bigger-editor .editor-panel {
   flex: 2.33; /* 70% width for editor panel */
 }
 
 /* Ensure non-editor panel stays at 30% when bigger-editor is active */
-.dro-split-layout.bigger-editor .dro-split-left:not(.editor-panel) {
+.drop-split-layout.bigger-editor .drop-split-left:not(.editor-panel) {
   flex: 1; /* 30% width for non-editor panel */
 }
 
-.dro-split-layout.bigger-editor .dro-split-right:not(.editor-panel) {
+.drop-split-layout.bigger-editor .drop-split-right:not(.editor-panel) {
   flex: 1; /* 30% width for non-editor panel */
 }
 
 /* Flipped layout indication */
-.dro-split-layout.flipped {
+.drop-split-layout.flipped {
   /* Visual indication could be added here if needed */
 }
 
 /* Panel Styles */
-.dro-panel {
+.drop-panel {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -92,14 +92,14 @@
   overflow: hidden;
 }
 
-.dro-panel-header {
+.drop-panel-header {
   background: var(--color-background-secondary);
   border-bottom: 1px solid var(--color-border-muted);
   padding: var(--spacing-sm) 12px;
   flex-shrink: 0;
 }
 
-.dro-panel-title {
+.drop-panel-title {
   font-size: 0.875rem;
   color: var(--color-amber);
   margin: 0;
@@ -108,7 +108,7 @@
   text-transform: uppercase;
 }
 
-.dro-panel-content {
+.drop-panel-content {
   flex: 1;
   overflow: auto;
   position: relative;
@@ -118,16 +118,16 @@
 }
 
 /* Panel Variants */
-.dro-panel.editor {
+.drop-panel.editor {
   border-left: none;
 }
 
-.dro-panel.visualizer {
+.drop-panel.visualizer {
   border-right: none;
 }
 
 /* Status Bar */
-.dro-status-bar {
+.drop-status-bar {
   background: var(--color-background-secondary);
   border-top: 1px solid var(--color-border-muted);
   padding: var(--spacing-xs) 12px;
@@ -140,79 +140,79 @@
   min-height: 24px;
 }
 
-.dro-status-left {
+.drop-status-left {
   display: flex;
   gap: var(--spacing-md);
   align-items: center;
 }
 
-.dro-status-right {
+.drop-status-right {
   display: flex;
   gap: var(--spacing-md);
   align-items: center;
   margin-left: auto;
 }
 
-.dro-status-item {
+.drop-status-item {
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
 }
 
-.dro-status-item.error {
+.drop-status-item.error {
   color: var(--color-error);
 }
 
-.dro-status-item.success {
+.drop-status-item.success {
   color: var(--color-success);
 }
 
-.dro-status-item.amber {
+.drop-status-item.amber {
   color: var(--color-amber);
 }
 
 /* Mobile Layout */
 @media (max-width: 768px) {
-  .dro-split-layout {
+  .drop-split-layout {
     flex-direction: column;
   }
-  
-  .dro-split-left,
-  .dro-split-right {
+
+  .drop-split-left,
+  .drop-split-right {
     min-width: auto;
     min-height: 300px;
   }
-  
-  .dro-split-divider {
+
+  .drop-split-divider {
     width: 100%;
     height: 1px;
     cursor: ns-resize;
   }
-  
-  .dro-panel {
+
+  .drop-panel {
     border-left: 1px solid var(--color-border-muted);
     border-right: 1px solid var(--color-border-muted);
   }
-  
-  .dro-panel.editor {
+
+  .drop-panel.editor {
     border-bottom: none;
   }
-  
-  .dro-panel.visualizer {
+
+  .drop-panel.visualizer {
     border-top: none;
   }
 }
 
 /* Focus states */
-.dro-panel:focus-within {
+.drop-panel:focus-within {
   border-color: var(--color-amber);
 }
 
-.dro-panel:focus-within .dro-panel-header {
+.drop-panel:focus-within .drop-panel-header {
   background: rgba(var(--color-glow-rgb), 0.1);
   border-bottom-color: var(--color-amber);
 }
 
-.dro-panel:focus-within .dro-panel-title {
+.drop-panel:focus-within .drop-panel-title {
   color: var(--color-amber-light);
-} 
+}

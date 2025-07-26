@@ -1,4 +1,4 @@
-/* DRO Global Styles - Retro Terminal Theme */
+/* DROP Global Styles - Retro Terminal Theme */
 
 :root {
   /* Theme variables - will be set by JavaScript before React loads */
@@ -88,7 +88,7 @@ body {
 }
 
 /* Main App */
-.dro-app {
+.drop-app {
   height: 100vh;
   display: flex;
   flex-direction: row;
@@ -347,6 +347,11 @@ select {
   width: 100%;
 }
 
+/* Fix number input spinner overlap */
+input[type="number"] {
+  padding-right: calc(var(--spacing-md) + 20px); /* Extra space for spinner */
+}
+
 .input:focus,
 input:focus,
 textarea:focus,
@@ -373,14 +378,26 @@ select:disabled {
   font-size: 0.7rem;
 }
 
+.input-xs[type="number"] {
+  padding-right: calc(var(--spacing-xs) + 18px);
+}
+
 .input-sm {
   padding: var(--spacing-xs) var(--spacing-sm);
   font-size: 0.75rem;
 }
 
+.input-sm[type="number"] {
+  padding-right: calc(var(--spacing-sm) + 18px);
+}
+
 .input-lg {
   padding: var(--spacing-md) var(--spacing-lg);
   font-size: 1rem;
+}
+
+.input-lg[type="number"] {
+  padding-right: calc(var(--spacing-lg) + 22px);
 }
 
 /* Input variants */

@@ -1,4 +1,4 @@
-// DRO Datum Binary Format Implementation
+// DROP Datum Binary Format Implementation
 // Based on DATUM_BINARY_SPECS.md
 
 import type { Datum, SpectralFrame } from '../DataModel/types';
@@ -90,7 +90,7 @@ export class DatumBinaryFormat {
       magic: DATUM_MAGIC,
       version: DATUM_VERSION,
       headerSize: DATUM_HEADER_SIZE,
-      name: datum.name || 'DRO Export',
+      name: datum.name || 'DROP Export',
       frames: datum.frameCount,
       startFrame: 0,
       endFrame: datum.frameCount - 1,

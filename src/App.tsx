@@ -9,9 +9,12 @@ import { DatumViewer } from './tools/datum-viewer/DatumViewer';
 import { ESP32Flasher } from './tools/esp32-flasher/ESP32Flasher';
 import { DaisyFlasher } from './tools/daisy-flasher/DaisyFlasher';
 import { UIGraphicsConverter } from './tools/ui-graphics/UIGraphicsConverter';
+import { DeviceBridge } from './tools/device-bridge/DeviceBridge';
+import { PixelArtGenerator } from './tools/pixel-art-generator/PixelArtGenerator';
 
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { pwaService } from './services/PWAService';
+import { debugLuaGlobals } from './debug-lua-globals';
 import './styles/globals.css';
 import './components/Navigation/VerticalNavbar.css';
 import './tools/spectral-analysis/SpectralAnalysis.css';
@@ -19,6 +22,8 @@ import './tools/datum-viewer/DatumViewer.css';
 import './tools/esp32-flasher/ESP32Flasher.css';
 import './tools/daisy-flasher/DaisyFlasher.css';
 import './tools/ui-graphics/UIGraphicsConverter.css';
+import './tools/device-bridge/DeviceBridge.css';
+import './tools/pixel-art-generator/PixelArtGenerator.css';
 
 // Tools configuration
 const TOOLS: Tool[] = [
@@ -41,6 +46,14 @@ const TOOLS: Tool[] = [
   {
     ...DEFAULT_TOOLS[4],
     component: UIGraphicsConverter
+  },
+  {
+    ...DEFAULT_TOOLS[5],
+    component: DeviceBridge
+  },
+  {
+    ...DEFAULT_TOOLS[6],
+    component: PixelArtGenerator
   }
 ];
 
@@ -48,21 +61,24 @@ const TOOLS: Tool[] = [
 const AppContent: React.FC = () => {
   const { settings, updateSettings } = useSettings();
   const [activeTool, setActiveTool] = useState(() => {
-    const savedToolId = localStorage.getItem('dro-active-tool');
+    const savedToolId = localStorage.getItem('drop-active-tool');
     return TOOLS.find(tool => tool.id === savedToolId) || TOOLS[0];
   });
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const handleToolChange = useCallback((tool: Tool) => {
     setActiveTool(tool);
-    localStorage.setItem('dro-active-tool', tool.id);
+    localStorage.setItem('drop-active-tool', tool.id);
   }, []);
 
   // Initialize PWA service
   useEffect(() => {
     pwaService.initialize().catch(error => {
-      console.error('DRO: PWA initialization failed:', error);
+      console.error('DROP: PWA initialization failed:', error);
     });
+
+    // Export debug function to window for console testing
+    (window as any).debugLuaGlobals = debugLuaGlobals;
   }, []);
 
   const handleSettings = useCallback(() => {
@@ -98,7 +114,7 @@ const AppContent: React.FC = () => {
   const ActiveToolComponent = activeTool.component;
 
   return (
-    <div className="dro-app">
+    <div className="drop-app">
       <VerticalNavbar
         tools={TOOLS}
         activeTool={activeTool}

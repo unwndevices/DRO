@@ -1,2 +1,3 @@
-// DRO Services Exports
-export * from './DataModel'; 
+// DROP Services Exports
+export * from './DataModel';
+export * from './DeviceBridge'; 

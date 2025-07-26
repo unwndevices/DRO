@@ -10,8 +10,8 @@ export default defineConfig({
       registerType: 'prompt',
       includeAssets: ['vite.svg', 'browserconfig.xml'],
       manifest: {
-        name: 'DRO - Datum Research Observatory',
-        short_name: 'DRO',
+        name: 'DROP - Datum Research Open Platform',
+        short_name: 'DROP',
         description: 'A minimalist Progressive Web App for Lua-based spectral lookup table generation and visualization',
         theme_color: '#C7EE1B',
         background_color: '#181818',
@@ -83,7 +83,7 @@ export default defineConfig({
       }
     })
   ],
-  base: process.env.NODE_ENV === 'production' ? '/DRO/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/DROP/' : '/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',

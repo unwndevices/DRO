@@ -1,6 +1,6 @@
-# Product Context: DRO (Datum Research Observatory)
+# Product Context: DROP(Datum Research Open Platform)
 
-## Why DRO Exists
+## Why DROPExists
 
 ### Problem Statement
 
@@ -13,7 +13,7 @@ Current tools for spectral lookup table generation are either:
 
 ### Solution Approach
 
-DRO provides a focused, lightweight solution that combines:
+DROPprovides a focused, lightweight solution that combines:
 
 - **Immediate Feedback**: Real-time visualization as code changes
 - **Minimal Friction**: Web-based, no installation required

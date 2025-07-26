@@ -1,4 +1,4 @@
-// DRO Data Model Exports
+// DROPData Model Exports
 export type {
   SpectralFrame,
   Datum,

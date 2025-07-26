@@ -34,10 +34,10 @@ const luaLinter = linter((view) => {
 
   // Check for basic syntax errors
   checkSyntaxErrors(text, diagnostics, doc);
-  
+
   // Check for undefined variables
   checkUndefinedVariables(text, diagnostics, doc);
-  
+
   // Check for common Lua mistakes
   checkCommonMistakes(text, diagnostics, doc);
 
@@ -47,20 +47,20 @@ const luaLinter = linter((view) => {
 // Basic Lua syntax error detection
 const checkSyntaxErrors = (text: string, diagnostics: Diagnostic[], doc: Text) => {
   const lines = text.split('\n');
-  
+
   lines.forEach((line, lineIndex) => {
     const trimmedLine = line.trim();
-    
+
     // Check for unmatched brackets
     const brackets = { '(': ')', '[': ']', '{': '}' };
     const stack: string[] = [];
     let inString = false;
     let stringChar = '';
-    
+
     for (let i = 0; i < line.length; i++) {
       const char = line[i];
       const prevChar = line[i - 1];
-      
+
       // Handle string literals
       if ((char === '"' || char === "'") && prevChar !== '\\') {
         if (!inString) {
@@ -71,7 +71,7 @@ const checkSyntaxErrors = (text: string, diagnostics: Diagnostic[], doc: Text) =
           stringChar = '';
         }
       }
-      
+
       if (!inString) {
         if (char in brackets) {
           stack.push(brackets[char as keyof typeof brackets]);
@@ -89,7 +89,7 @@ const checkSyntaxErrors = (text: string, diagnostics: Diagnostic[], doc: Text) =
         }
       }
     }
-    
+
     // Check for incomplete function definitions
     if (trimmedLine.startsWith('function') && !trimmedLine.includes('end') && !text.slice(text.indexOf(line)).includes('end')) {
       const from = doc.line(lineIndex + 1).from;
@@ -100,7 +100,7 @@ const checkSyntaxErrors = (text: string, diagnostics: Diagnostic[], doc: Text) =
         message: 'Function definition missing "end" keyword'
       });
     }
-    
+
     // Check for incomplete if statements
     if (trimmedLine.match(/^if\s+.*\s+then\s*$/) && !text.slice(text.indexOf(line)).includes('end')) {
       const from = doc.line(lineIndex + 1).from;
@@ -111,7 +111,7 @@ const checkSyntaxErrors = (text: string, diagnostics: Diagnostic[], doc: Text) =
         message: 'If statement missing "end" keyword'
       });
     }
-    
+
     // Check for incomplete for loops
     if (trimmedLine.match(/^for\s+.*\s+do\s*$/) && !text.slice(text.indexOf(line)).includes('end')) {
       const from = doc.line(lineIndex + 1).from;
@@ -130,7 +130,7 @@ const checkUndefinedVariables = (text: string, diagnostics: Diagnostic[], doc: T
   // Extract all local variables and function parameters
   const localVars = new Set<string>();
   const globalVars = new Set(['i', 'f', 'i_amt', 'f_amt', 'math', 'print', 'type', 'tonumber', 'tostring', 'pairs', 'ipairs', 'next', 'string', 'table']);
-  
+
   // Standard Lua globals
   globalVars.add('_G');
   globalVars.add('_VERSION');
@@ -145,7 +145,7 @@ const checkUndefinedVariables = (text: string, diagnostics: Diagnostic[], doc: T
   globalVars.add('unpack');
   globalVars.add('pcall');
   globalVars.add('xpcall');
-  
+
   // Extract local variable declarations
   const localVarRegex = /local\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\s*,\s*[a-zA-Z_][a-zA-Z0-9_]*)*)/g;
   let match;
@@ -157,7 +157,7 @@ const checkUndefinedVariables = (text: string, diagnostics: Diagnostic[], doc: T
       }
     });
   }
-  
+
   // Extract function names and parameters
   const functionParamRegex = /function\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([^)]*)\)/g;
   while ((match = functionParamRegex.exec(text)) !== null) {
@@ -175,7 +175,7 @@ const checkUndefinedVariables = (text: string, diagnostics: Diagnostic[], doc: T
       });
     }
   }
-  
+
   // Extract local function declarations: local function name()
   const localFunctionRegex = /local\s+function\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/g;
   while ((match = localFunctionRegex.exec(text)) !== null) {
@@ -183,7 +183,7 @@ const checkUndefinedVariables = (text: string, diagnostics: Diagnostic[], doc: T
       localVars.add(match[1]);
     }
   }
-  
+
   // Extract for loop variables
   const forLoopRegex = /for\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\s*,\s*[a-zA-Z_][a-zA-Z0-9_]*)*)\s+[=in]/g;
   while ((match = forLoopRegex.exec(text)) !== null) {
@@ -194,36 +194,36 @@ const checkUndefinedVariables = (text: string, diagnostics: Diagnostic[], doc: T
       }
     });
   }
-  
+
   // Check for undefined variable usage
   const lines = text.split('\n');
-  
+
   lines.forEach((line, lineIndex) => {
     // Skip comments and strings
     const cleanLine = line.replace(/--.*$/, '').replace(/"[^"]*"/g, '').replace(/'[^']*'/g, '');
-    
+
     let varMatch;
     const usageRegex = /\b([a-zA-Z_][a-zA-Z0-9_]*)\b/g;
     while ((varMatch = usageRegex.exec(cleanLine)) !== null) {
       const varName = varMatch[1];
-      
+
       // Skip keywords and known patterns
       const keywords = ['function', 'local', 'if', 'then', 'else', 'elseif', 'end', 'for', 'while', 'do', 'return', 'break', 'true', 'false', 'nil', 'and', 'or', 'not', 'in'];
       if (keywords.includes(varName)) continue;
-      
+
       // Skip if it's a property access (after a dot)
       const beforeVar = cleanLine.substring(0, varMatch.index);
       if (beforeVar.endsWith('.')) continue;
-      
+
       // Skip if it's a function declaration
       if (cleanLine.includes(`function ${varName}`) || cleanLine.includes(`function(`) || cleanLine.includes(`local ${varName}`)) continue;
-      
+
       // Check if variable is defined
       if (!localVars.has(varName) && !globalVars.has(varName)) {
         const lineStart = doc.line(lineIndex + 1).from;
         const from = lineStart + varMatch.index!;
         const to = from + varName.length;
-        
+
         diagnostics.push({
           from,
           to,
@@ -238,10 +238,10 @@ const checkUndefinedVariables = (text: string, diagnostics: Diagnostic[], doc: T
 // Check for common Lua mistakes
 const checkCommonMistakes = (text: string, diagnostics: Diagnostic[], doc: Text) => {
   const lines = text.split('\n');
-  
+
   lines.forEach((line, lineIndex) => {
     const trimmedLine = line.trim();
-    
+
     // Check for assignment instead of comparison (but not <=, >=, ~=, ==)
     if (trimmedLine.match(/if\s+.*[^<>=~]=(?!=)/)) {
       const assignIndex = line.indexOf('=');
@@ -253,7 +253,7 @@ const checkCommonMistakes = (text: string, diagnostics: Diagnostic[], doc: Text)
         message: 'Did you mean "==" for comparison instead of "=" for assignment?'
       });
     }
-    
+
     // Check for missing "then" in if statements
     if (trimmedLine.match(/^if\s+.*[^then]\s*$/) && !trimmedLine.includes('then')) {
       const from = doc.line(lineIndex + 1).from;
@@ -264,7 +264,7 @@ const checkCommonMistakes = (text: string, diagnostics: Diagnostic[], doc: Text)
         message: 'If statement missing "then" keyword'
       });
     }
-    
+
     // Check for missing "do" in loops
     if ((trimmedLine.match(/^for\s+/) || trimmedLine.match(/^while\s+/)) && !trimmedLine.includes('do')) {
       const from = doc.line(lineIndex + 1).from;
@@ -275,7 +275,7 @@ const checkCommonMistakes = (text: string, diagnostics: Diagnostic[], doc: Text)
         message: 'Loop missing "do" keyword'
       });
     }
-    
+
     // Check for incorrect string concatenation
     if (trimmedLine.includes('+') && (trimmedLine.includes('"') || trimmedLine.includes("'"))) {
       const plusIndex = line.indexOf('+');
@@ -294,7 +294,7 @@ const checkCommonMistakes = (text: string, diagnostics: Diagnostic[], doc: Text)
 const luaGlobalsCompletion = (context: CompletionContext) => {
   const word = context.matchBefore(/\w*/);
   if (!word) return null;
-  
+
   const options = [
     {
       label: 'i',
@@ -303,14 +303,14 @@ const luaGlobalsCompletion = (context: CompletionContext) => {
       detail: 'number'
     },
     {
-      label: 'f', 
+      label: 'f',
       type: 'variable',
       info: 'Current frame number (0 to f_amt-1)',
       detail: 'number'
     },
     {
       label: 'i_amt',
-      type: 'variable', 
+      type: 'variable',
       info: 'Total number of frequency bands (20)',
       detail: 'number'
     },
@@ -345,7 +345,7 @@ const luaLocalVariablesCompletion = (context: CompletionContext) => {
   // Match local variable declarations: local varname, local var1, var2
   const localVarRegex = /local\s+([a-zA-Z_][a-zA-Z0-9_]*(?:\s*,\s*[a-zA-Z_][a-zA-Z0-9_]*)*)/g;
   let match;
-  
+
   while ((match = localVarRegex.exec(beforeText)) !== null) {
     // Split comma-separated variables
     const vars = match[1].split(',').map(v => v.trim());
@@ -402,7 +402,7 @@ const luaLocalVariablesCompletion = (context: CompletionContext) => {
   }));
 
   // Filter based on what user is typing
-  const filteredOptions = options.filter(option => 
+  const filteredOptions = options.filter(option =>
     option.label.toLowerCase().startsWith(word.text.toLowerCase())
   );
 
@@ -416,7 +416,7 @@ const luaLocalVariablesCompletion = (context: CompletionContext) => {
 const luaStdLibCompletion = (context: CompletionContext) => {
   const word = context.matchBefore(/[\w.]*$/);
   if (!word) return null;
-  
+
   const options = [
     // Math functions
     { label: 'math.sin', type: 'function', info: 'Returns the sine of x (in radians)', detail: 'math.sin(x)' },
@@ -433,13 +433,13 @@ const luaStdLibCompletion = (context: CompletionContext) => {
     { label: 'math.max', type: 'function', info: 'Returns the maximum value among its arguments', detail: 'math.max(x, ...)' },
     { label: 'math.min', type: 'function', info: 'Returns the minimum value among its arguments', detail: 'math.min(x, ...)' },
     { label: 'math.random', type: 'function', info: 'Returns a pseudo-random number', detail: 'math.random([m [, n]])' },
-    
+
     // Common Lua functions
     { label: 'print', type: 'function', info: 'Prints values to output', detail: 'print(...)' },
     { label: 'type', type: 'function', info: 'Returns the type of its argument', detail: 'type(v)' },
     { label: 'tonumber', type: 'function', info: 'Converts argument to a number', detail: 'tonumber(e [,base])' },
     { label: 'tostring', type: 'function', info: 'Converts argument to a string', detail: 'tostring(v)' },
-    
+
     // Control structures and keywords
     { label: 'function', type: 'keyword', info: 'Defines a function', detail: 'function name() end' },
     { label: 'local', type: 'keyword', info: 'Declares a local variable', detail: 'local var = value' },
@@ -459,7 +459,7 @@ const luaStdLibCompletion = (context: CompletionContext) => {
 
   return {
     from: word.from,
-    options: options.filter(option => 
+    options: options.filter(option =>
       option.label.toLowerCase().includes(word.text.toLowerCase())
     )
   };
@@ -478,7 +478,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   const [lastExecutionTime, setLastExecutionTime] = useState<number | null>(null);
 
   const handleExecute = useCallback(() => {
-    console.log('DRO: CodeEditor handleExecute called');
+    console.log('DROP: CodeEditor handleExecute called');
     if (onExecute) {
       const startTime = performance.now();
       onExecute(value);
@@ -494,16 +494,16 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
     key: 'Ctrl-Enter',
     mac: 'Cmd-Enter',
     preventDefault: true,
-    run: () => { 
-      console.log('DRO: CodeEditor Ctrl+Enter keymap triggered');
-      handleExecute(); 
+    run: () => {
+      console.log('DROP: CodeEditor Ctrl+Enter keymap triggered');
+      handleExecute();
       return true; // Important: return true to prevent further processing
     },
   }]));
 
   return (
-    <div className={`dro-code-editor ${className}`}>
-      <div className="dro-editor-container">
+    <div className={`drop-code-editor ${className}`}>
+      <div className="drop-editor-container">
         <CodeMirror
           value={value}
           height="100%"
@@ -523,25 +523,25 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
             ...createEditorTheme(settings.theme.name),
           ]}
           onChange={onEditorChange}
-          className="dro-codemirror-instance"
+          className="drop-codemirror-instance"
         />
       </div>
-      
+
       {errors.length > 0 && (
-        <div className="dro-editor-errors">
+        <div className="drop-editor-errors">
           {errors.map((error, index) => (
-            <div key={index} className="dro-editor-error">
-              {error.line && <span className="dro-error-line">Line {error.line}:</span>}
-              <span className="dro-error-message">{error.message}</span>
+            <div key={index} className="drop-editor-error">
+              {error.line && <span className="drop-error-line">Line {error.line}:</span>}
+              <span className="drop-error-message">{error.message}</span>
             </div>
           ))}
         </div>
       )}
-      
-      <div className="dro-editor-footer">
-        <div className="dro-editor-info">
+
+      <div className="drop-editor-footer">
+        <div className="drop-editor-info">
           <span>Ctrl+Enter to execute • Ctrl+Space for completion</span>
-          <div className="dro-frame-count-control">
+          <div className="drop-frame-count-control">
             <label htmlFor="frame-count-input">Frames:</label>
             <input
               id="frame-count-input"
@@ -558,8 +558,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           )}
         </div>
         {onExecute && (
-          <button 
-            className="dro-execute-button btn-primary"
+          <button
+            className="drop-execute-button btn-primary"
             onClick={handleExecute}
             title="Execute Script (Ctrl+Enter)"
           >

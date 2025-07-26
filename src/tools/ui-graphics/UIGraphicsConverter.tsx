@@ -54,10 +54,10 @@ const processImageData = (data: Uint8ClampedArray, range: [number, number]) => {
 
 // Storage keys
 const STORAGE_KEYS = {
-  IMAGES: 'dro-ui-graphics-images',
-  FPS: 'dro-ui-graphics-fps',
-  RANGE: 'dro-ui-graphics-range',
-  FILENAME: 'dro-ui-graphics-filename'
+  IMAGES: 'drop-ui-graphics-images',
+  FPS: 'drop-ui-graphics-fps',
+  RANGE: 'drop-ui-graphics-range',
+  FILENAME: 'drop-ui-graphics-filename'
 };
 
 export const UIGraphicsConverter: React.FC = () => {
@@ -76,7 +76,7 @@ export const UIGraphicsConverter: React.FC = () => {
     return localStorage.getItem(STORAGE_KEYS.FILENAME) || '';
   });
   const [generatedCode, setGeneratedCode] = useState<string>('');
-  
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
   const lastFrameTime = useRef(0);
@@ -131,7 +131,7 @@ export const UIGraphicsConverter: React.FC = () => {
 
   const drawFrame = (frameIndex: number) => {
     if (!images[frameIndex] || !canvasRef.current) return;
-    
+
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -151,7 +151,7 @@ export const UIGraphicsConverter: React.FC = () => {
 
     // Get image data for processing
     const imageData = tempCtx.getImageData(0, 0, img.width, img.height);
-    
+
     // Process image data with correct color mapping
     processImageData(imageData.data, range);
 
@@ -332,7 +332,7 @@ export const UIGraphicsConverter: React.FC = () => {
               className="file-input"
             />
           </div>
-          
+
           <div className="playback-controls">
             <div className="fps-control">
               <label>FPS:</label>
@@ -344,7 +344,7 @@ export const UIGraphicsConverter: React.FC = () => {
                 className="fps-input"
               />
             </div>
-            
+
             <button
               onClick={togglePlayback}
               disabled={images.length === 0}

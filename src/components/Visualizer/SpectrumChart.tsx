@@ -120,7 +120,7 @@ export const SpectrumChart: React.FC<SpectrumChartProps> = ({
     ctx.fillStyle = '#999999';
     ctx.font = '10px Fira Mono';
     ctx.textAlign = 'right';
-    
+
     const labelCount = 5;
     for (let i = 0; i <= labelCount; i++) {
       const value = minValue + (range * (labelCount - i) / labelCount);
@@ -134,13 +134,13 @@ export const SpectrumChart: React.FC<SpectrumChartProps> = ({
   const frameCount = frames.length;
 
   return (
-    <div className={`dro-spectrum-chart ${className}`}>
+    <div className={`drop-spectrum-chart ${className}`}>
       <canvas
         ref={canvasRef}
-        className="dro-chart-canvas"
+        className="drop-chart-canvas"
       />
-      <div className="dro-chart-info">
-        <div className="dro-chart-stats">
+      <div className="drop-chart-info">
+        <div className="drop-chart-stats">
           <span>Frame: {currentFrame + 1}/{frameCount}</span>
           <span>Bands: {bandCount}</span>
           {currentFrameData && (

@@ -1,7 +1,7 @@
-// DRO Service Worker - Offline Support and Caching
-const CACHE_NAME = 'dro-v1.0.0';
-const STATIC_CACHE = 'dro-static-v1.0.0';
-const DYNAMIC_CACHE = 'dro-dynamic-v1.0.0';
+// DROP Service Worker - Offline Support and Caching
+const CACHE_NAME = 'drop-v1.0.0';
+const STATIC_CACHE = 'drop-static-v1.0.0';
+const DYNAMIC_CACHE = 'drop-dynamic-v1.0.0';
 
 // Assets to cache immediately
 const STATIC_ASSETS = [
@@ -28,28 +28,28 @@ const NO_CACHE_PATTERNS = [
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('DRO SW: Installing service worker');
+  console.log('DROP SW: Installing service worker');
   
   event.waitUntil(
     caches.open(STATIC_CACHE)
       .then((cache) => {
-        console.log('DRO SW: Caching static assets');
+        console.log('DROP SW: Caching static assets');
         return cache.addAll(STATIC_ASSETS);
       })
       .then(() => {
-        console.log('DRO SW: Static assets cached successfully');
+        console.log('DROP SW: Static assets cached successfully');
         // Force activation of new service worker
         return self.skipWaiting();
       })
       .catch((error) => {
-        console.error('DRO SW: Failed to cache static assets:', error);
+        console.error('DROP SW: Failed to cache static assets:', error);
       })
   );
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('DRO SW: Activating service worker');
+  console.log('DROP SW: Activating service worker');
   
   event.waitUntil(
     caches.keys()
@@ -57,14 +57,14 @@ self.addEventListener('activate', (event) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
             if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
-              console.log('DRO SW: Deleting old cache:', cacheName);
+              console.log('DROP SW: Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
         );
       })
       .then(() => {
-        console.log('DRO SW: Service worker activated successfully');
+        console.log('DROP SW: Service worker activated successfully');
         // Take control of all clients immediately
         return self.clients.claim();
       })
@@ -110,7 +110,7 @@ self.addEventListener('fetch', (event) => {
       caches.match(request)
         .then((response) => {
           if (response) {
-            console.log('DRO SW: Serving from cache:', request.url);
+            console.log('DROP SW: Serving from cache:', request.url);
             return response;
           }
           
@@ -127,14 +127,14 @@ self.addEventListener('fetch', (event) => {
               
               caches.open(DYNAMIC_CACHE)
                 .then((cache) => {
-                  console.log('DRO SW: Caching new asset:', request.url);
+                  console.log('DROP SW: Caching new asset:', request.url);
                   cache.put(request, responseToCache);
                 });
               
               return response;
             })
             .catch((error) => {
-              console.error('DRO SW: Fetch failed:', error);
+              console.error('DROP SW: Fetch failed:', error);
               // Try to serve from cache as fallback
               return caches.match(request);
             });
@@ -149,7 +149,7 @@ self.addEventListener('message', (event) => {
   
   switch (type) {
     case 'SKIP_WAITING':
-      console.log('DRO SW: Received skip waiting message');
+      console.log('DROP SW: Received skip waiting message');
       self.skipWaiting();
       break;
       
@@ -158,7 +158,7 @@ self.addEventListener('message', (event) => {
       break;
       
     case 'CLEAR_CACHE':
-      console.log('DRO SW: Clearing all caches');
+      console.log('DROP SW: Clearing all caches');
       caches.keys()
         .then((cacheNames) => {
           return Promise.all(
@@ -174,15 +174,15 @@ self.addEventListener('message', (event) => {
       break;
       
     default:
-      console.log('DRO SW: Unknown message type:', type);
+      console.log('DROP SW: Unknown message type:', type);
   }
 });
 
 // Background sync for future enhancements
 self.addEventListener('sync', (event) => {
-  console.log('DRO SW: Background sync triggered:', event.tag);
+  console.log('DROP SW: Background sync triggered:', event.tag);
   
-  if (event.tag === 'dro-sync') {
+  if (event.tag === 'drop-sync') {
     event.waitUntil(
       // Future: sync user scripts, settings, etc.
       Promise.resolve()
@@ -192,10 +192,10 @@ self.addEventListener('sync', (event) => {
 
 // Push notifications for future enhancements
 self.addEventListener('push', (event) => {
-  console.log('DRO SW: Push notification received');
+  console.log('DROP SW: Push notification received');
   
   const options = {
-    body: 'DRO has been updated with new features!',
+    body: 'DROP has been updated with new features!',
     icon: '/icons/icon-192x192.png',
     badge: '/icons/icon-96x96.png',
     vibrate: [100, 50, 100],
@@ -206,13 +206,13 @@ self.addEventListener('push', (event) => {
   };
   
   event.waitUntil(
-    self.registration.showNotification('DRO Update', options)
+    self.registration.showNotification('DROP Update', options)
   );
 });
 
 // Notification click handler
 self.addEventListener('notificationclick', (event) => {
-  console.log('DRO SW: Notification clicked');
+  console.log('DROP SW: Notification clicked');
   event.notification.close();
   
   event.waitUntil(

@@ -1,8 +1,8 @@
-# Project Brief: DRO (Datum Research Observatory)
+# Project Brief: DROP(Datum Research Open Platform)
 
 ## Overview
 
-DRO is a minimalist Progressive Web App (PWA) that serves as a Lua IDE for generating and visualizing spectral lookup tables (Datum). The application features a distinctive retro-terminal UI with Fira Mono font and amber theme.
+DROPis a minimalist Progressive Web App (PWA) that serves as a Lua IDE for generating and visualizing spectral lookup tables (Datum). The application features a distinctive retro-terminal UI with Fira Mono font and amber theme.
 
 ## Core Purpose
 

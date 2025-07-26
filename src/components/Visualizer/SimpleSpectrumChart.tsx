@@ -18,7 +18,18 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
   className = ''
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(() => {
+    try {
+      const saved = localStorage.getItem('drop-chart-settings');
+      if (saved) {
+        const settings = JSON.parse(saved);
+        return settings.isPlaying || false;
+      }
+    } catch (error) {
+      console.warn('DROP: Failed to load chart settings:', error);
+    }
+    return false;
+  });
   const { settings } = useSettings();
 
   // Auto-play effect
@@ -31,6 +42,15 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
 
     return () => clearInterval(interval);
   }, [isPlaying, currentFrame, frames.length, onFrameChange]);
+
+  // Auto-save chart settings whenever they change
+  useEffect(() => {
+    const settings = {
+      isPlaying,
+      timestamp: new Date().toISOString()
+    };
+    localStorage.setItem('drop-chart-settings', JSON.stringify(settings));
+  }, [isPlaying]);
 
   // Get current theme colors from CSS variables
   const getThemeColors = () => {
@@ -201,15 +221,15 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
   const frameCount = frames.length;
 
   return (
-    <div className={`dro-simple-spectrum-chart ${className}`}>
-      <div className="dro-chart-container">
+    <div className={`drop-simple-spectrum-chart ${className}`}>
+      <div className="drop-chart-container">
         <canvas
           ref={canvasRef}
-          className="dro-simple-chart-canvas"
+          className="drop-simple-chart-canvas"
         />
         
-        <div className="dro-chart-info">
-          <div className="dro-chart-stats">
+        <div className="drop-chart-info">
+          <div className="drop-chart-stats">
             <span>Bands: {bandCount}</span>
             {currentFrameData && (
               <span>
@@ -220,22 +240,22 @@ export const SimpleSpectrumChart: React.FC<SimpleSpectrumChartProps> = ({
         </div>
       </div>
 
-      <div className="dro-simple-controls">
+      <div className="drop-simple-controls">
         <button
-          className="dro-play-button btn-primary"
+          className="drop-play-button btn-primary"
           onClick={() => setIsPlaying(!isPlaying)}
           title={isPlaying ? 'Pause' : 'Play'}
         >
           {isPlaying ? <FaPause /> : <FaPlay />}
         </button>
         
-        <div className="dro-frame-controls">
-          <span className="dro-frame-info">
+        <div className="drop-frame-controls">
+          <span className="drop-frame-info">
             Frame: {currentFrame + 1}/{frameCount}
           </span>
           <input
             type="range"
-            className="dro-frame-slider"
+            className="drop-frame-slider"
             min="0"
             max={Math.max(0, frameCount - 1)}
             value={currentFrame}

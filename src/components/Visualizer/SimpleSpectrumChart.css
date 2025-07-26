@@ -1,4 +1,4 @@
-.dro-simple-spectrum-chart {
+.drop-simple-spectrum-chart {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -7,7 +7,7 @@
   overflow: hidden;
 }
 
-.dro-simple-controls {
+.drop-simple-controls {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
@@ -18,7 +18,7 @@
   min-height: 42px;
 }
 
-.dro-play-button {
+.drop-play-button {
   background: var(--color-amber);
   color: var(--color-background);
   border: none;
@@ -31,23 +31,23 @@
   min-width: 50px;
 }
 
-.dro-play-button:hover {
+.drop-play-button:hover {
   background: var(--color-amber-light);
   box-shadow: var(--shadow-glow-strong);
 }
 
-.dro-play-button:active {
+.drop-play-button:active {
   transform: translateY(1px);
 }
 
-.dro-frame-controls {
+.drop-frame-controls {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
   flex: 1;
 }
 
-.dro-frame-info {
+.drop-frame-info {
   color: var(--color-text-muted);
   font-size: 0.7rem;
   text-transform: uppercase;
@@ -55,7 +55,7 @@
   min-width: 90px;
 }
 
-.dro-frame-slider {
+.drop-frame-slider {
   flex: 1;
   -webkit-appearance: none;
   background: var(--color-background-tertiary);
@@ -65,11 +65,11 @@
   transition: background 0.2s;
 }
 
-.dro-frame-slider:hover {
+.drop-frame-slider:hover {
   background: var(--color-background-secondary);
 }
 
-.dro-frame-slider::-webkit-slider-thumb {
+.drop-frame-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 16px;
   height: 16px;
@@ -80,13 +80,13 @@
   transition: all 0.2s;
 }
 
-.dro-frame-slider::-webkit-slider-thumb:hover {
+.drop-frame-slider::-webkit-slider-thumb:hover {
   background: var(--color-amber-light);
   transform: scale(1.1);
   box-shadow: var(--shadow-glow-strong);
 }
 
-.dro-frame-slider::-moz-range-thumb {
+.drop-frame-slider::-moz-range-thumb {
   width: 16px;
   height: 16px;
   border-radius: 50%;
@@ -96,20 +96,20 @@
   transition: all 0.2s;
 }
 
-.dro-chart-container {
+.drop-chart-container {
   flex: 1;
   position: relative;
   min-height: 0; /* Allow flex shrinking */
 }
 
-.dro-simple-chart-canvas {
+.drop-simple-chart-canvas {
   width: 100%;
   height: 100%;
   display: block;
   cursor: default;
 }
 
-.dro-chart-info {
+.drop-chart-info {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -119,7 +119,7 @@
   pointer-events: none;
 }
 
-.dro-chart-stats {
+.drop-chart-stats {
   display: flex;
   gap: var(--spacing-md);
   font-family: var(--font-mono);
@@ -129,29 +129,29 @@
   letter-spacing: 0.5px;
 }
 
-.dro-chart-stats span {
+.drop-chart-stats span {
   padding: 2px 4px;
   background: rgba(var(--color-background-rgb), 0.7);
   border-radius: var(--border-radius-sm);
   border: 1px solid rgba(var(--color-border-muted-rgb), 0.3);
 }
 
-.dro-chart-stats span:first-child {
+.drop-chart-stats span:first-child {
   color: var(--color-amber);
   border-color: rgba(var(--color-glow-rgb), 0.5);
   font-weight: 600;
 }
 
 /* Empty state */
-.dro-simple-spectrum-chart.empty {
+.drop-simple-spectrum-chart.empty {
   opacity: 0.6;
 }
 
-.dro-simple-spectrum-chart.empty .dro-simple-chart-canvas {
+.drop-simple-spectrum-chart.empty .drop-simple-chart-canvas {
   filter: grayscale(100%);
 }
 
-.dro-simple-spectrum-chart.empty::after {
+.drop-simple-spectrum-chart.empty::after {
   content: 'Execute Lua script to generate spectral data visualization';
   position: absolute;
   top: 50%;
@@ -168,7 +168,7 @@
 }
 
 /* Loading state */
-.dro-simple-spectrum-chart.loading::before {
+.drop-simple-spectrum-chart.loading::before {
   content: '';
   position: absolute;
   top: 0;
@@ -179,7 +179,7 @@
   z-index: 20;
 }
 
-.dro-simple-spectrum-chart.loading::after {
+.drop-simple-spectrum-chart.loading::after {
   content: 'Executing Lua...';
   position: absolute;
   top: 50%;
@@ -201,51 +201,51 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .dro-simple-controls {
+  .drop-simple-controls {
     padding: var(--spacing-sm);
     gap: 12px;
   }
   
-  .dro-frame-info {
+  .drop-frame-info {
     font-size: 10px;
     min-width: 80px;
   }
   
-  .dro-chart-stats {
+  .drop-chart-stats {
     gap: 12px;
     font-size: 9px;
   }
   
-  .dro-chart-stats span {
+  .drop-chart-stats span {
     padding: 1px 3px;
   }
 }
 
 @media (max-width: 480px) {
-  .dro-simple-controls {
+  .drop-simple-controls {
     flex-direction: column;
     gap: var(--spacing-sm);
   }
   
-  .dro-frame-controls {
+  .drop-frame-controls {
     width: 100%;
   }
   
-  .dro-chart-stats {
+  .drop-chart-stats {
     flex-direction: column;
     gap: var(--spacing-xs);
   }
 }
 
 /* Focus and accessibility */
-.dro-play-button:focus,
-.dro-frame-slider:focus {
+.drop-play-button:focus,
+.drop-frame-slider:focus {
   box-shadow: 0 0 0 2px rgba(var(--color-glow-rgb), 0.3);
 }
 
 /* High DPI displays */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .dro-simple-chart-canvas {
+  .drop-simple-chart-canvas {
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
   }

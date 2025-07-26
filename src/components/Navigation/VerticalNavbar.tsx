@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, BarChart3, FolderOpen, Zap, Cpu } from 'lucide-react';
+import { Image, BarChart3, FolderOpen, Zap, Cpu, Radio, Palette } from 'lucide-react';
 
 export interface Tool {
   id: string;
@@ -15,20 +15,20 @@ interface VerticalNavbarProps {
   onToolChange: (tool: Tool) => void;
 }
 
-export const VerticalNavbar: React.FC<VerticalNavbarProps> = ({ 
-  tools, 
-  activeTool, 
-  onToolChange 
+export const VerticalNavbar: React.FC<VerticalNavbarProps> = ({
+  tools,
+  activeTool,
+  onToolChange
 }) => {
   return (
     <nav className="vertical-navbar">
       <div className="navbar-header">
         <div className="navbar-logo">
-          <span className="logo-text">DRO</span>
-          <span className="logo-subtitle">Datum Research Observatory</span>
+          <span className="logo-text">DROP</span>
+          <span className="logo-subtitle">Datum Research Open Platform</span>
         </div>
       </div>
-      
+
       <div className="navbar-tools">
         {tools.map((tool) => (
           <button
@@ -82,6 +82,20 @@ export const DEFAULT_TOOLS: Tool[] = [
     name: 'Graphic to UI',
     description: 'Convert image sequences to UI graphics format',
     icon: <Image className="w-6 h-6" />,
+    component: () => null // Will be set by parent
+  },
+  {
+    id: 'device-bridge',
+    name: 'Device Bridge',
+    description: 'Connect to Eisei devices via Bluetooth or USB for real-time control',
+    icon: <Radio className="w-6 h-6" />,
+    component: () => null // Will be set by parent
+  },
+  {
+    id: 'pixel-art-generator',
+    name: 'Pixel Art Generator',
+    description: 'Lua-powered pixel art generator for Eisei\'s 127x127 OLED display',
+    icon: <Palette className="w-6 h-6" />,
     component: () => null // Will be set by parent
   }
 ];

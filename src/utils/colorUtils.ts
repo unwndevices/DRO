@@ -11,9 +11,8 @@ function hexToHsl(hex: string): [number, number, number] {
 
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
-    let h: number, s: number, l: number;
-
-    l = (max + min) / 2;
+    let h: number, s: number;
+    const l = (max + min) / 2;
 
     if (max === min) {
         h = s = 0; // achromatic
@@ -172,7 +171,7 @@ export function applyTheme(themeName: ThemeName): void {
     root.style.setProperty('--shadow-glow', theme.shadows.glow);
     root.style.setProperty('--shadow-glow-strong', theme.shadows.glowStrong);
 
-    console.log('DRO: Theme applied:', themeName);
+    console.log('DROP: Theme applied:', themeName);
 }
 
 /**
@@ -228,7 +227,7 @@ export function applyThemeColors(accentColor: string, backgroundColor: string, t
     // Update error RGB for consistency (keep error colors but update their RGB for transparency)
     root.style.setProperty('--color-error-rgb', '255, 68, 68');
 
-    console.log('DRO: Theme colors applied', {
+    console.log('DROP: Theme colors applied', {
         accent: accentVariants.base,
         background: backgroundVariants.base,
         selection: selectionBg

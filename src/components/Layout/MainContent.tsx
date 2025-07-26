@@ -8,7 +8,7 @@ interface MainContentProps {
 
 export const MainContent: React.FC<MainContentProps> = ({ children }) => {
   return (
-    <main className="dro-main-content">
+    <main className="drop-main-content">
       {children}
     </main>
   );
@@ -22,11 +22,11 @@ interface PanelProps {
 
 export const Panel: React.FC<PanelProps> = ({ title, children, className = '' }) => {
   return (
-    <div className={`dro-panel ${className}`}>
-      <div className="dro-panel-header">
-        <h2 className="dro-panel-title">{title}</h2>
+    <div className={`drop-panel ${className}`}>
+      <div className="drop-panel-header">
+        <h2 className="drop-panel-title">{title}</h2>
       </div>
-      <div className="dro-panel-content">
+      <div className="drop-panel-content">
         {children}
       </div>
     </div>
@@ -40,15 +40,15 @@ interface SplitLayoutProps {
 
 export const SplitLayout: React.FC<SplitLayoutProps> = ({ left, right }) => {
   const { settings } = useSettings();
-  
+
   // Determine which panel contains the editor based on flip state
   // When flipped, the editor (left prop) is on the right side
   // When not flipped, the editor (left prop) is on the left side
   const editorOnLeft = !settings.layout.flipUI;
-  
+
   // Determine layout classes based on settings
   const layoutClasses = [
-    'dro-split-layout',
+    'drop-split-layout',
     settings.layout.biggerEditor ? 'bigger-editor' : 'normal-split',
     settings.layout.flipUI ? 'flipped' : ''
   ].filter(Boolean).join(' ');
@@ -59,11 +59,11 @@ export const SplitLayout: React.FC<SplitLayoutProps> = ({ left, right }) => {
 
   return (
     <div className={layoutClasses}>
-      <div className={`dro-split-left ${settings.layout.biggerEditor && editorOnLeft ? 'editor-panel' : ''}`}>
+      <div className={`drop-split-left ${settings.layout.biggerEditor && editorOnLeft ? 'editor-panel' : ''}`}>
         {leftPanel}
       </div>
-      <div className="dro-split-divider"></div>
-      <div className={`dro-split-right ${settings.layout.biggerEditor && !editorOnLeft ? 'editor-panel' : ''}`}>
+      <div className="drop-split-divider"></div>
+      <div className={`drop-split-right ${settings.layout.biggerEditor && !editorOnLeft ? 'editor-panel' : ''}`}>
         {rightPanel}
       </div>
     </div>

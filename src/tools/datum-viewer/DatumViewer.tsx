@@ -23,15 +23,15 @@ export const DatumViewer: React.FC = () => {
       if (result.success && result.datum) {
         setSpectralData(result.datum);
         setCurrentFrame(0);
-        console.log('DRO: Datum imported successfully:', result.datum.name);
+        console.log('DROP: Datum imported successfully:', result.datum.name);
       } else if (result.error) {
         setImportError(result.error);
-        console.error('DRO: Import failed:', result.error);
+        console.error('DROP: Import failed:', result.error);
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown import error';
       setImportError(errorMessage);
-      console.error('DRO: Import error:', error);
+      console.error('DROP: Import error:', error);
     } finally {
       setIsImporting(false);
     }
@@ -49,15 +49,15 @@ export const DatumViewer: React.FC = () => {
       if (result.success && result.datum) {
         setSpectralData(result.datum);
         setCurrentFrame(0);
-        console.log('DRO: JSON datum imported successfully:', result.datum.name);
+        console.log('DROP: JSON datum imported successfully:', result.datum.name);
       } else if (result.error) {
         setImportError(result.error);
-        console.error('DRO: JSON import failed:', result.error);
+        console.error('DROP: JSON import failed:', result.error);
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown import error';
       setImportError(errorMessage);
-      console.error('DRO: JSON import error:', error);
+      console.error('DROP: JSON import error:', error);
     } finally {
       setIsImporting(false);
     }
@@ -107,15 +107,15 @@ export const DatumViewer: React.FC = () => {
       if (result.success && result.datum) {
         setSpectralData(result.datum);
         setCurrentFrame(0);
-        console.log('DRO: Datum dropped and imported successfully:', result.datum.name);
+        console.log('DROP: Datum dropped and imported successfully:', result.datum.name);
       } else if (result.error) {
         setImportError(result.error);
-        console.error('DRO: Drop import failed:', result.error);
+        console.error('DROP: Drop import failed:', result.error);
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown import error';
       setImportError(errorMessage);
-      console.error('DRO: Drop import error:', error);
+      console.error('DROP: Drop import error:', error);
     } finally {
       setIsImporting(false);
     }

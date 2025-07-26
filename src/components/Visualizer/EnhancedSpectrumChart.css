@@ -1,4 +1,4 @@
-.dro-enhanced-spectrum-chart {
+.drop-enhanced-spectrum-chart {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -7,13 +7,13 @@
   overflow: hidden;
 }
 
-.dro-chart-container {
+.drop-chart-container {
   flex: 1;
   position: relative;
   min-height: 0; /* Allow flex shrinking */
 }
 
-.dro-enhanced-chart-canvas {
+.drop-enhanced-chart-canvas {
   width: 100%;
   height: 100%;
   display: block;
@@ -21,11 +21,11 @@
   transition: opacity 0.2s;
 }
 
-.dro-enhanced-chart-canvas:hover {
+.drop-enhanced-chart-canvas:hover {
   opacity: 0.95;
 }
 
-.dro-chart-info {
+.drop-chart-info {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -35,7 +35,7 @@
   pointer-events: none;
 }
 
-.dro-chart-stats {
+.drop-chart-stats {
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-md);
@@ -46,46 +46,46 @@
   letter-spacing: 0.5px;
 }
 
-.dro-chart-stats span {
+.drop-chart-stats span {
   padding: 2px 4px;
   background: rgba(var(--color-background-rgb), 0.7);
   border-radius: var(--border-radius-sm);
   border: 1px solid rgba(var(--color-border-muted-rgb), 0.3);
 }
 
-.dro-chart-stats span:first-child {
+.drop-chart-stats span:first-child {
   color: var(--color-amber);
   border-color: rgba(var(--color-glow-rgb), 0.5);
   font-weight: 600;
 }
 
 /* Chart type specific styles */
-.dro-enhanced-spectrum-chart[data-chart-type="bars"] .dro-enhanced-chart-canvas {
+.drop-enhanced-spectrum-chart[data-chart-type="bars"] .drop-enhanced-chart-canvas {
   cursor: default;
 }
 
-.dro-enhanced-spectrum-chart[data-chart-type="line"] .dro-enhanced-chart-canvas {
+.drop-enhanced-spectrum-chart[data-chart-type="line"] .drop-enhanced-chart-canvas {
   cursor: crosshair;
 }
 
-.dro-enhanced-spectrum-chart[data-chart-type="waterfall"] .dro-enhanced-chart-canvas {
+.drop-enhanced-spectrum-chart[data-chart-type="waterfall"] .drop-enhanced-chart-canvas {
   cursor: grab;
 }
 
-.dro-enhanced-spectrum-chart[data-chart-type="surface"] .dro-enhanced-chart-canvas {
+.drop-enhanced-spectrum-chart[data-chart-type="surface"] .drop-enhanced-chart-canvas {
   cursor: move;
 }
 
 /* Loading and empty states */
-.dro-enhanced-spectrum-chart.empty {
+.drop-enhanced-spectrum-chart.empty {
   opacity: 0.6;
 }
 
-.dro-enhanced-spectrum-chart.empty .dro-enhanced-chart-canvas {
+.drop-enhanced-spectrum-chart.empty .drop-enhanced-chart-canvas {
   filter: grayscale(100%);
 }
 
-.dro-enhanced-spectrum-chart.empty::after {
+.drop-enhanced-spectrum-chart.empty::after {
   content: 'No spectral data available. Execute Lua script to generate visualization.';
   position: absolute;
   top: 50%;
@@ -99,11 +99,11 @@
   z-index: 10;
 }
 
-.dro-enhanced-spectrum-chart.loading {
+.drop-enhanced-spectrum-chart.loading {
   position: relative;
 }
 
-.dro-enhanced-spectrum-chart.loading::before {
+.drop-enhanced-spectrum-chart.loading::before {
   content: '';
   position: absolute;
   top: 0;
@@ -114,7 +114,7 @@
   z-index: 20;
 }
 
-.dro-enhanced-spectrum-chart.loading::after {
+.drop-enhanced-spectrum-chart.loading::after {
   content: 'Generating visualization...';
   position: absolute;
   top: 50%;
@@ -134,27 +134,27 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .dro-chart-stats {
+  .drop-chart-stats {
     gap: var(--spacing-sm);
     font-size: 9px;
   }
   
-  .dro-chart-stats span {
+  .drop-chart-stats span {
     padding: 1px 3px;
   }
   
-  .dro-chart-info {
+  .drop-chart-info {
     padding: 6px var(--spacing-sm) 2px;
   }
 }
 
 @media (max-width: 480px) {
-  .dro-chart-stats {
+  .drop-chart-stats {
     flex-direction: column;
     gap: var(--spacing-xs);
   }
   
-  .dro-chart-stats span {
+  .drop-chart-stats span {
     display: inline-block;
     margin-right: var(--spacing-sm);
     margin-bottom: 2px;
@@ -163,7 +163,7 @@
 
 /* High DPI display optimizations */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .dro-enhanced-chart-canvas {
+  .drop-enhanced-chart-canvas {
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
   }
@@ -171,24 +171,24 @@
 
 /* Dark mode and theme variations */
 @media (prefers-color-scheme: dark) {
-  .dro-enhanced-spectrum-chart {
+  .drop-enhanced-spectrum-chart {
     border-color: var(--color-border-muted);
   }
 }
 
 /* Print styles */
 @media print {
-  .dro-enhanced-spectrum-chart {
+  .drop-enhanced-spectrum-chart {
     break-inside: avoid;
     border: 1px solid black;
   }
   
-  .dro-chart-info {
+  .drop-chart-info {
     background: white;
     color: black;
   }
   
-  .dro-chart-stats span {
+  .drop-chart-stats span {
     border-color: #666;
     background: #f0f0f0;
     color: #333;
@@ -196,21 +196,21 @@
 }
 
 /* Focus and accessibility */
-.dro-enhanced-chart-canvas:focus {
+.drop-enhanced-chart-canvas:focus {
   outline: 2px solid var(--color-amber);
   outline-offset: 2px;
 }
 
 /* Animation for chart transitions */
-.dro-enhanced-spectrum-chart.transitioning .dro-enhanced-chart-canvas {
+.drop-enhanced-spectrum-chart.transitioning .drop-enhanced-chart-canvas {
   transition: filter 0.3s ease;
 }
 
 /* Export mode styling */
-.dro-enhanced-spectrum-chart.exporting {
+.drop-enhanced-spectrum-chart.exporting {
   pointer-events: none;
 }
 
-.dro-enhanced-spectrum-chart.exporting .dro-enhanced-chart-canvas {
+.drop-enhanced-spectrum-chart.exporting .drop-enhanced-chart-canvas {
   filter: brightness(1.1) contrast(1.05);
 } 
